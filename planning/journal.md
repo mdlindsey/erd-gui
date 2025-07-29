@@ -1039,6 +1039,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 1: Project Setup with Vite, React 18+, TypeScript
 
 **Task 1.1: Initialize Vite Project**
+- **Branch**: `setup/vite-init`
 - **Description**: Create new Vite project with React and TypeScript template
 - **Instructions**: 
   - Run `npm create vite@latest pgerd-gui -- --template react-ts`
@@ -1050,6 +1051,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 30 minutes
 
 **Task 1.2: Configure TypeScript Strict Mode**
+- **Branch**: `setup/typescript-config`
 - **Description**: Set up strict TypeScript configuration for type safety
 - **Instructions**:
   - Update `tsconfig.json` to include: `"strict": true`, `"noImplicitAny": true`, `"strictNullChecks": true`
@@ -1060,6 +1062,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1 hour
 
 **Task 1.3: Install Core Dependencies**
+- **Branch**: `setup/dependencies`
 - **Description**: Install React Flow, Redux Toolkit, and other core dependencies
 - **Instructions**:
   - Install React Flow: `npm install reactflow`
@@ -1073,6 +1076,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 2: Redux Toolkit Store with Abstracted Service Layer
 
 **Task 2.1: Define Core TypeScript Interfaces**
+- **Branch**: `types/core-interfaces`
 - **Description**: Create type definitions for application state
 - **Instructions**:
   - Create `src/types/index.ts` with core interfaces (AppState, CanvasState, Table, etc.)
@@ -1084,6 +1088,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 2 hours
 
 **Task 2.2: Implement Redux Store Structure**
+- **Branch**: `store/redux-setup`
 - **Description**: Set up Redux Toolkit store with proper slice organization
 - **Instructions**:
   - Create `src/store/index.ts` with configureStore
@@ -1096,6 +1101,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 3 hours
 
 **Task 2.3: Create Abstracted Service Layer**
+- **Branch**: `services/state-abstraction`
 - **Description**: Implement service layer that abstracts Redux implementation
 - **Instructions**:
   - Create `src/services/StateService.ts` implementing the abstract interface
@@ -1110,6 +1116,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 3: React Flow Canvas Integration with Basic Zoom/Pan
 
 **Task 3.1: Set Up React Flow Canvas**
+- **Branch**: `canvas/react-flow-setup`
 - **Description**: Create basic React Flow canvas with proper configuration
 - **Instructions**:
   - Create `src/components/canvas/Canvas.tsx` component
@@ -1122,6 +1129,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 3 hours
 
 **Task 3.2: Implement Custom Controls**
+- **Branch**: `canvas/custom-controls`
 - **Description**: Create custom zoom and pan controls
 - **Instructions**:
   - Create `src/components/canvas/CanvasControls.tsx`
@@ -1134,6 +1142,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 2 hours
 
 **Task 3.3: Integrate Canvas with State Management**
+- **Branch**: `canvas/state-integration`
 - **Description**: Connect canvas to Redux store for state persistence
 - **Instructions**:
   - Connect canvas component to Redux store using useSelector and useDispatch
@@ -1148,6 +1157,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 4: 15px Grid System with Snap-to-Grid Functionality
 
 **Task 4.1: Implement Grid Rendering**
+- **Branch**: `grid/visual-rendering`
 - **Description**: Create visual grid system on canvas
 - **Instructions**:
   - Create `src/components/canvas/Grid.tsx` component
@@ -1160,6 +1170,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 2 hours
 
 **Task 4.2: Implement Snap-to-Grid Logic**
+- **Branch**: `grid/snap-logic`
 - **Description**: Create utility functions for snapping coordinates to grid
 - **Instructions**:
   - Create `src/utils/grid.ts` with snapToGrid function
@@ -1172,6 +1183,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1.5 hours
 
 **Task 4.3: Integrate Grid with Canvas Interactions**
+- **Branch**: `grid/canvas-integration`
 - **Description**: Apply snap-to-grid to all canvas interactions
 - **Instructions**:
   - Modify canvas event handlers to use snapToGrid
@@ -1186,6 +1198,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 5: Basic Project Structure and Component Architecture
 
 **Task 5.1: Create Component Directory Structure**
+- **Branch**: `structure/component-dirs`
 - **Description**: Set up organized component architecture
 - **Instructions**:
   - Create directory structure: `src/components/{canvas,tables,relationships,notes,ui,panels}`
@@ -1198,6 +1211,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1 hour
 
 **Task 5.2: Create Base UI Components**
+- **Branch**: `ui/base-components`
 - **Description**: Implement reusable UI components using Radix UI
 - **Instructions**:
   - Create `src/components/ui/Button.tsx`, `Modal.tsx`, `Input.tsx`
@@ -1210,6 +1224,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 3 hours
 
 **Task 5.3: Set Up CSS Architecture**
+- **Branch**: `styles/css-architecture`
 - **Description**: Implement CSS Modules with custom properties for theming
 - **Instructions**:
   - Create `src/styles/` directory with global styles
@@ -1224,6 +1239,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 6: ESLint + Prettier Configuration
 
 **Task 6.1: Install and Configure ESLint**
+- **Branch**: `lint/eslint-setup`
 - **Description**: Set up ESLint with React and TypeScript rules
 - **Instructions**:
   - Install ESLint: `npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks`
@@ -1236,6 +1252,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1 hour
 
 **Task 6.2: Install and Configure Prettier**
+- **Branch**: `lint/prettier-setup`
 - **Description**: Set up Prettier for consistent code formatting
 - **Instructions**:
   - Install Prettier: `npm install -D prettier eslint-config-prettier eslint-plugin-prettier`
@@ -1248,6 +1265,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 30 minutes
 
 **Task 6.3: Set Up Pre-commit Hooks**
+- **Branch**: `lint/pre-commit-hooks`
 - **Description**: Configure Git hooks for code quality
 - **Instructions**:
   - Install husky: `npm install -D husky lint-staged`
@@ -1262,6 +1280,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 #### Deliverable 7: Vitest + React Testing Library Setup with 80% Coverage Enforcement
 
 **Task 7.1: Install and Configure Vitest**
+- **Branch**: `testing/vitest-setup`
 - **Description**: Set up Vitest testing framework
 - **Instructions**:
   - Install Vitest: `npm install -D vitest @vitest/ui jsdom`
@@ -1274,6 +1293,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1 hour
 
 **Task 7.2: Install and Configure React Testing Library**
+- **Branch**: `testing/rtl-setup`
 - **Description**: Set up React Testing Library for component testing
 - **Instructions**:
   - Install React Testing Library: `npm install -D @testing-library/react @testing-library/jest-dom @testing-library/user-event`
@@ -1286,6 +1306,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1.5 hours
 
 **Task 7.3: Configure Coverage Reporting**
+- **Branch**: `testing/coverage-config`
 - **Description**: Set up code coverage with 80% enforcement
 - **Instructions**:
   - Configure Vitest coverage settings in `vite.config.ts`
@@ -1298,6 +1319,7 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Estimated Effort**: 1 hour
 
 **Task 7.4: Create Initial Test Suite**
+- **Branch**: `testing/initial-tests`
 - **Description**: Write comprehensive tests for existing components
 - **Instructions**:
   - Write unit tests for utility functions
@@ -1346,7 +1368,7 @@ This detailed backlog ensures that junior to mid-level engineers have clear, act
 This planning document is a living document that should remain succinct yet comprehensive. When making updates:
 
 **PR Requirements:**
-- **Title**: Short description of what step was completed (e.g., "Enhance planning documentation based on architectural review")
+- **Title**: Very short description (1-3 words ideally, e.g., "Plan review", "Architecture update", "Scope refinement")
 - **Description**: Summary of the conversation or analysis that led to the changes
 - **Branch**: Short and relevant name (e.g., `planning/review`, `architecture/updates`)
 
