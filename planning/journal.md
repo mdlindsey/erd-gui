@@ -135,3 +135,342 @@ The app must support the `.pgerd` format as shown in `/planning/samples/design.p
 - **Testing**: Include unit tests for core functionality
 - **Documentation**: Provide clear API documentation for the `.pgerd` format
 - **Performance**: Optimize for large diagrams and smooth interactions
+
+## Technical Design
+
+July 28, 2025 @ 11:30pm
+
+### Architecture Overview
+
+The application follows a layered architecture with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                       │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Canvas    │ │   Toolbar   │ │   Panels    │          │
+│  │ Components  │ │ Components  │ │ Components  │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     Business Logic Layer                    │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Table     │ │ Relationship│ │   User      │          │
+│  │  Services   │ │  Services   │ │  Services   │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      State Management                       │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Store     │ │   Actions   │ │   Selectors │          │
+│  │ (Redux TK)  │ │ (Abstracted)│ │ (Abstracted)│          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      Data Layer                             │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Local     │ │   Import/   │ │   Export    │ │   Validation│          │
+│  │  Storage    │ │   Services  │ │   Services  │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Technology Stack
+
+**Core Framework**: React 18+ with TypeScript
+- **State Management**: Redux Toolkit with abstracted service layer
+- **UI Components**: Radix UI primitives with custom styling
+- **Diagram Library**: React Flow (supports all requirements without blockers)
+- **Styling**: CSS Modules + CSS Custom Properties for theming
+- **Build Tool**: Vite (fast development, optimized builds)
+- **Testing**: Vitest + React Testing Library
+- **Linting**: ESLint + Prettier
+
+### Key Design Decisions
+
+#### 1. State Management Abstraction
+```typescript
+// Abstracted service layer for easy state management switching
+interface StateService {
+  getState(): AppState;
+  dispatch(action: AppAction): void;
+  subscribe(listener: (state: AppState) => void): () => void;
+}
+
+// Redux implementation (can be swapped)
+class ReduxStateService implements StateService {
+  // Implementation details hidden from components
+}
+```
+
+#### 2. Performance Optimizations
+- **Virtualization**: Only render visible tables and relationships
+- **Canvas Rendering**: Use React Flow's optimized canvas for large diagrams
+- **Debounced Updates**: Throttle expensive operations (auto-save, relationship updates)
+- **Memoization**: React.memo for expensive components, useMemo for derived state
+- **Web Workers**: Offload heavy computations (relationship validation, layout algorithms)
+
+#### 3. Component Architecture
+```
+src/
+├── components/
+│   ├── canvas/           # Diagram canvas components
+│   ├── tables/           # Table-related components
+│   ├── relationships/    # Connection line components
+│   ├── users/           # User entity components
+│   ├── schema-boxes/    # Visual grouping components
+│   ├── ui/              # Reusable UI components (Radix-based)
+│   └── panels/          # Sidebar panels and modals
+├── services/            # Business logic and external integrations
+├── store/              # State management (abstracted)
+├── types/              # TypeScript type definitions
+├── utils/              # Utility functions
+└── hooks/              # Custom React hooks
+```
+
+### Core Data Models
+
+#### Table Model
+```typescript
+interface Table {
+  id: string;
+  name: string;
+  schema: string;
+  position: { x: number; y: number };
+  columns: Column[];
+  constraints: Constraint[];
+  notes: Note[];
+  metadata: TableMetadata;
+}
+
+interface Column {
+  name: string;
+  type: PostgresType;
+  isPrimaryKey: boolean;
+  isNullable: boolean;
+  defaultValue?: string;
+  constraints: ColumnConstraint[];
+}
+```
+
+#### Relationship Model
+```typescript
+interface Relationship {
+  id: string;
+  type: 'onetomany' | 'manytoone' | 'onetoone' | 'manytomany';
+  sourceTable: string;
+  sourceColumn: string;
+  targetTable: string;
+  targetColumn: string;
+  cascadeOptions: CascadeOptions;
+  points: Point[]; // For custom routing
+}
+```
+
+#### User Entity Model
+```typescript
+interface UserEntity {
+  id: string;
+  name: string;
+  position: { x: number; y: number };
+  permissions: Permission[];
+  color: string;
+}
+
+interface Permission {
+  tableId: string;
+  access: 'read' | 'write' | 'both';
+}
+```
+
+### Canvas Implementation
+
+#### React Flow Integration
+- **Custom Node Types**: Table, User, SchemaBox components
+- **Custom Edge Types**: Relationship, Permission lines
+- **Custom Controls**: Zoom, pan, grid controls
+- **Performance**: React Flow's built-in virtualization and optimization
+
+#### Grid System
+```typescript
+const GRID_SIZE = 15;
+const SNAP_THRESHOLD = 5;
+
+function snapToGrid(value: number): number {
+  return Math.round(value / GRID_SIZE) * GRID_SIZE;
+}
+```
+
+### State Management Structure
+
+#### Redux Store Slice
+```typescript
+interface AppState {
+  canvas: CanvasState;
+  tables: TablesState;
+  relationships: RelationshipsState;
+  users: UsersState;
+  schemaBoxes: SchemaBoxesState;
+  ui: UIState;
+  undo: UndoState;
+}
+
+interface CanvasState {
+  zoom: number;
+  offset: { x: number; y: number };
+  gridEnabled: boolean;
+  selectedElements: string[];
+}
+```
+
+#### Abstracted Actions
+```typescript
+// Service layer abstracts Redux actions
+class TableService {
+  createTable(table: Omit<Table, 'id'>): Promise<Table>;
+  updateTable(id: string, updates: Partial<Table>): Promise<Table>;
+  deleteTable(id: string): Promise<void>;
+  moveTable(id: string, position: Point): Promise<void>;
+}
+```
+
+### Performance Strategies
+
+#### 1. Rendering Optimization
+- **React.memo**: All table and relationship components
+- **useCallback**: Event handlers to prevent unnecessary re-renders
+- **useMemo**: Expensive calculations (relationship routing, layout)
+
+#### 2. Virtualization
+```typescript
+// Only render visible elements
+const visibleTables = useMemo(() => {
+  return tables.filter(table => isInViewport(table.position, viewport));
+}, [tables, viewport]);
+```
+
+#### 3. Debounced Operations
+```typescript
+const debouncedAutoSave = useMemo(
+  () => debounce(saveToLocalStorage, 1000),
+  []
+);
+```
+
+### File Format Handling
+
+#### Import/Export Service
+```typescript
+class FileService {
+  async importPgerd(file: File): Promise<AppState>;
+  async exportPgerd(state: AppState): Promise<Blob>;
+  validatePgerd(data: unknown): ValidationResult;
+}
+```
+
+#### Data Validation
+```typescript
+interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
+}
+
+// Validate relationships, table references, etc.
+function validateState(state: AppState): ValidationResult {
+  // Implementation
+}
+```
+
+### Theming System
+
+#### CSS Custom Properties
+```css
+:root {
+  --table-bg-color: #ffffff;
+  --table-border-color: #e2e8f0;
+  --relationship-line-color: #64748b;
+  --user-entity-color: #f59e0b;
+  --schema-box-color: #3b82f6;
+}
+```
+
+#### Theme Configuration
+```typescript
+interface Theme {
+  colors: ColorPalette;
+  fonts: FontConfig;
+  spacing: SpacingConfig;
+  borderRadius: BorderRadiusConfig;
+}
+```
+
+### Undo/Redo Implementation
+
+#### Command Pattern
+```typescript
+interface Command {
+  execute(): void;
+  undo(): void;
+  redo(): void;
+}
+
+class CommandManager {
+  private history: Command[] = [];
+  private currentIndex: number = -1;
+  
+  execute(command: Command): void;
+  undo(): void;
+  redo(): void;
+}
+```
+
+### Testing Strategy
+
+#### Unit Tests
+- Business logic services
+- State management actions/reducers
+- Utility functions
+- Data validation
+
+#### Integration Tests
+- File import/export
+- Canvas interactions
+- Undo/redo functionality
+
+#### Component Tests
+- Table components
+- Relationship components
+- User interface components
+
+### Development Workflow
+
+#### Code Organization
+- **Feature-based**: Group related components, services, and types
+- **Dependency Injection**: Services injected through context/providers
+- **Type Safety**: Strict TypeScript configuration
+- **Error Boundaries**: Graceful error handling
+
+#### Build Configuration
+- **Vite**: Fast development server and optimized builds
+- **Code Splitting**: Lazy load non-critical components
+- **Tree Shaking**: Remove unused code
+- **Bundle Analysis**: Monitor bundle size
+
+### Future Considerations
+
+#### Scalability
+- **Micro-frontend Architecture**: Split into smaller applications
+- **Web Workers**: Move heavy computations off main thread
+- **Service Workers**: Offline support and caching
+- **IndexedDB**: Larger local storage capacity
+
+#### Extensibility
+- **Plugin System**: Allow custom node types and behaviors
+- **API Layer**: Abstract external integrations
+- **Configuration System**: User-customizable settings
+- **Migration System**: Handle format version changes
+
+This technical design provides a solid foundation for building a performant, maintainable, and extensible Postgres ERD GUI while ensuring all MVP and future requirements can be met efficiently.
+
+
