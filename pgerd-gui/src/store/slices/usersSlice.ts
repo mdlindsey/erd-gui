@@ -45,7 +45,7 @@ const usersSlice = createSlice({
       }
     },
     
-    clearAllUsers: (state) => {
+    clearAllUsers: () => {
       return initialState;
     },
   },
