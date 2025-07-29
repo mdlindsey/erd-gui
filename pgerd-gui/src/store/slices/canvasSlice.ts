@@ -128,7 +128,7 @@ const canvasSlice = createSlice({
     },
     
     // Reset canvas to initial state
-    resetCanvas: (state) => {
+    resetCanvas: () => {
       return initialState;
     },
   },

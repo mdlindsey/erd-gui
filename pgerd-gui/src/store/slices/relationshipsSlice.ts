@@ -1,7 +1,7 @@
 // Relationships slice for managing foreign key relationships
 
 import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
-import { RelationshipsState, Relationship, CreateRelationshipPayload } from '../../types';
+import { RelationshipsState, Relationship, CreateRelationshipPayload, CascadeAction } from '../../types';
 
 // Initial state
 const initialState: RelationshipsState = {
@@ -27,8 +27,8 @@ const relationshipsSlice = createSlice({
         sourceColumnId: action.payload.sourceColumnId,
         targetColumnId: action.payload.targetColumnId,
         type: action.payload.type,
-        onDelete: action.payload.onDelete || 'RESTRICT',
-        onUpdate: action.payload.onUpdate || 'RESTRICT',
+        onDelete: action.payload.onDelete || CascadeAction.RESTRICT,
+        onUpdate: action.payload.onUpdate || CascadeAction.RESTRICT,
         name: action.payload.name,
         enforced: true,
       };
@@ -171,7 +171,7 @@ const relationshipsSlice = createSlice({
     // Visual adjustments
     updateRelationshipControlPoints: (state, action: PayloadAction<{ 
       id: string; 
-      controlPoints: Array<{ id: string; x: number; y: number; type: string }> 
+      controlPoints: Array<{ id: string; x: number; y: number; type: import('../../types').ControlPointType }> 
     }>) => {
       const { id, controlPoints } = action.payload;
       if (state.byId[id]) {
@@ -222,7 +222,7 @@ const relationshipsSlice = createSlice({
     },
     
     // Reset state
-    clearAllRelationships: (state) => {
+    clearAllRelationships: () => {
       return initialState;
     },
     

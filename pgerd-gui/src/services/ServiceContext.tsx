@@ -77,7 +77,7 @@ export const useCanvasService = () => {
     updateViewport: service.updateViewport.bind(service),
     toggleGrid: service.toggleGrid.bind(service),
     toggleSnapToGrid: service.toggleSnapToGrid.bind(service),
-    fitToView: service.fitToView?.bind(service), // Optional method
+    // fitToView will be implemented in later tasks
   };
 };
 

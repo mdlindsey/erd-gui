@@ -158,7 +158,7 @@ const permissionsSlice = createSlice({
       delete state.byUserId[userId];
     },
     
-    clearAllPermissions: (state) => {
+    clearAllPermissions: () => {
       return initialState;
     },
   },

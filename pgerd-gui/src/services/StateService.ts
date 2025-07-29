@@ -55,7 +55,7 @@ export class ReduxStateService extends StateService {
 
   // Table operations
   addTable(table: Omit<Table, 'id'>): string {
-    const action = this.store.dispatch(tablesActions.addTable({
+    this.store.dispatch(tablesActions.addTable({
       name: table.name,
       position: table.position,
       schemaName: table.schemaName,

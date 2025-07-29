@@ -1,7 +1,7 @@
 // Notes slice for managing diagram annotations
 
 import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
-import { NotesState, Note, CreateNotePayload } from '../../types';
+import { NotesState, Note, CreateNotePayload, NoteFormat } from '../../types';
 
 // Initial state
 const initialState: NotesState = {
@@ -28,7 +28,7 @@ const notesSlice = createSlice({
         collapsed: false,
         tableId: action.payload.tableId,
         color: action.payload.color || state.defaultNoteColor,
-        format: action.payload.format || 'plain_text',
+        format: action.payload.format || NoteFormat.PLAIN_TEXT,
         createdAt: now,
         updatedAt: now,
       };
@@ -145,7 +145,7 @@ const notesSlice = createSlice({
       state.defaultNoteSize = action.payload;
     },
     
-    clearAllNotes: (state) => {
+    clearAllNotes: () => {
       return initialState;
     },
   },

@@ -90,7 +90,7 @@ const schemaBoxesSlice = createSlice({
       });
     },
     
-    clearAllSchemaBoxes: (state) => {
+    clearAllSchemaBoxes: () => {
       return initialState;
     },
   },

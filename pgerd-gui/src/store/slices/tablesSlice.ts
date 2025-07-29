@@ -222,7 +222,7 @@ const tablesSlice = createSlice({
     },
     
     // Reset state
-    clearAllTables: (state) => {
+    clearAllTables: () => {
       return initialState;
     },
   },
