@@ -14,12 +14,13 @@ export interface ServiceProviderProps {
 }
 
 // Service Provider component
-export const ServiceProvider: React.FC<ServiceProviderProps> = ({ 
-  children, 
-  service 
+export const ServiceProvider: React.FC<ServiceProviderProps> = ({
+  children,
+  service,
 }) => {
   // Use provided service or get current service from factory
-  const stateService = service || ServiceFactory.getInstance().getCurrentService();
+  const stateService =
+    service || ServiceFactory.getInstance().getCurrentService();
 
   return (
     <ServiceContext.Provider value={stateService}>
@@ -31,14 +32,14 @@ export const ServiceProvider: React.FC<ServiceProviderProps> = ({
 // Hook to use the service in components
 export const useStateService = (): StateService => {
   const service = useContext(ServiceContext);
-  
+
   if (!service) {
     throw new Error(
       'useStateService must be used within a ServiceProvider. ' +
-      'Make sure to wrap your app with <ServiceProvider>.'
+        'Make sure to wrap your app with <ServiceProvider>.'
     );
   }
-  
+
   return service;
 };
 
@@ -49,7 +50,7 @@ export const useServiceState = () => {
 
   React.useEffect(() => {
     // Subscribe to state changes
-    const unsubscribe = service.subscribe((newState) => {
+    const unsubscribe = service.subscribe(newState => {
       setState(newState);
     });
 
@@ -72,7 +73,7 @@ export const useCanvasService = () => {
     snapToGrid: state.canvas.snapToGrid,
     gridSize: state.canvas.gridSize,
     zoomRange: state.canvas.zoomRange,
-    
+
     // Actions
     updateViewport: service.updateViewport.bind(service),
     toggleGrid: service.toggleGrid.bind(service),
@@ -91,7 +92,7 @@ export const useTablesService = () => {
     allTableIds: state.tables.allIds,
     selectedTableIds: state.tables.selectedIds,
     showColumnTypes: state.tables.showColumnTypes,
-    
+
     // Actions
     addTable: service.addTable.bind(service),
     updateTable: service.updateTable.bind(service),
@@ -113,7 +114,7 @@ export const useRelationshipsService = () => {
     relationships: state.relationships.byId,
     allRelationshipIds: state.relationships.allIds,
     showRelationshipNames: state.relationships.showRelationshipNames,
-    
+
     // Actions
     addRelationship: service.addRelationship.bind(service),
     updateRelationship: service.updateRelationship.bind(service),
@@ -130,7 +131,7 @@ export const useNotesService = () => {
     notes: state.notes.byId,
     allNoteIds: state.notes.allIds,
     showAllNotes: state.notes.showAllNotes,
-    
+
     // Actions
     addNote: service.addNote.bind(service),
     updateNote: service.updateNote.bind(service),
@@ -149,7 +150,7 @@ export const useUIService = () => {
     sidebarOpen: state.ui.sidebarOpen,
     activePanel: state.ui.activePanel,
     theme: state.ui.theme,
-    
+
     // Actions
     setSelectedTool: service.setSelectedTool.bind(service),
     toggleColumnTypes: service.toggleColumnTypes.bind(service),

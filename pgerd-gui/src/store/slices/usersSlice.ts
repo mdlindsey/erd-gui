@@ -18,18 +18,21 @@ const usersSlice = createSlice({
         id,
         ...action.payload,
       };
-      
+
       state.byId[id] = user;
       state.allIds.push(id);
     },
-    
-    updateUser: (state, action: PayloadAction<{ id: string; updates: Partial<Omit<User, 'id'>> }>) => {
+
+    updateUser: (
+      state,
+      action: PayloadAction<{ id: string; updates: Partial<Omit<User, 'id'>> }>
+    ) => {
       const { id, updates } = action.payload;
       if (state.byId[id]) {
         state.byId[id] = { ...state.byId[id], ...updates };
       }
     },
-    
+
     deleteUser: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       if (state.byId[id]) {
@@ -37,14 +40,17 @@ const usersSlice = createSlice({
         state.allIds = state.allIds.filter(userId => userId !== id);
       }
     },
-    
-    moveUser: (state, action: PayloadAction<{ id: string; position: { x: number; y: number } }>) => {
+
+    moveUser: (
+      state,
+      action: PayloadAction<{ id: string; position: { x: number; y: number } }>
+    ) => {
       const { id, position } = action.payload;
       if (state.byId[id]) {
         state.byId[id].position = position;
       }
     },
-    
+
     clearAllUsers: () => {
       return initialState;
     },

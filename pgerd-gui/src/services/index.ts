@@ -2,12 +2,12 @@
 
 // Core service classes and types
 export { ReduxStateService } from './StateService';
-export { 
-  ServiceFactory, 
-  createStateService, 
+export {
+  ServiceFactory,
+  createStateService,
   initializeDefaultService,
   type ServiceType,
-  type ServiceConfig 
+  type ServiceConfig,
 } from './ServiceFactory';
 
 // React context and hooks
@@ -21,7 +21,7 @@ export {
   useNotesService,
   useUIService,
   withService,
-  type ServiceProviderProps
+  type ServiceProviderProps,
 } from './ServiceContext';
 
 // Re-export StateService abstract class from types

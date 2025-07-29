@@ -19,45 +19,45 @@ const uiSlice = createSlice({
     setSelectedTool: (state, action: PayloadAction<Tool>) => {
       state.selectedTool = action.payload;
     },
-    
+
     // Column display settings
-    toggleColumnTypes: (state) => {
+    toggleColumnTypes: state => {
       state.showColumnTypes = !state.showColumnTypes;
     },
-    
+
     setShowColumnTypes: (state, action: PayloadAction<boolean>) => {
       state.showColumnTypes = action.payload;
     },
-    
+
     // Sidebar management
-    toggleSidebar: (state) => {
+    toggleSidebar: state => {
       state.sidebarOpen = !state.sidebarOpen;
     },
-    
+
     setSidebarOpen: (state, action: PayloadAction<boolean>) => {
       state.sidebarOpen = action.payload;
     },
-    
+
     // Panel management
     setActivePanel: (state, action: PayloadAction<Panel | null>) => {
       state.activePanel = action.payload;
     },
-    
+
     togglePanel: (state, action: PayloadAction<Panel>) => {
       const panel = action.payload;
       state.activePanel = state.activePanel === panel ? null : panel;
     },
-    
-    closePanel: (state) => {
+
+    closePanel: state => {
       state.activePanel = null;
     },
-    
+
     // Theme management
     setTheme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
     },
-    
-    toggleTheme: (state) => {
+
+    toggleTheme: state => {
       switch (state.theme) {
         case Theme.LIGHT:
           state.theme = Theme.DARK;
@@ -72,12 +72,12 @@ const uiSlice = createSlice({
           break;
       }
     },
-    
+
     // Bulk UI settings
     setUIPreferences: (state, action: PayloadAction<Partial<UIState>>) => {
       return { ...state, ...action.payload };
     },
-    
+
     // Reset UI to defaults
     resetUI: () => {
       return initialState;

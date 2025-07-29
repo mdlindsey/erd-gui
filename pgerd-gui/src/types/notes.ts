@@ -25,7 +25,7 @@ export interface Note {
 export enum NoteFormat {
   PLAIN_TEXT = 'plain_text',
   MARKDOWN = 'markdown',
-  RICH_TEXT = 'rich_text'
+  RICH_TEXT = 'rich_text',
 }
 
 export interface NotesState {
@@ -72,7 +72,7 @@ export const DEFAULT_NOTE_TEMPLATES: NoteTemplate[] = [
     content: 'Add your notes here...',
     size: { width: 200, height: 100 },
     color: '#ffd700',
-    format: NoteFormat.PLAIN_TEXT
+    format: NoteFormat.PLAIN_TEXT,
   },
   {
     id: 'table-comment',
@@ -80,7 +80,7 @@ export const DEFAULT_NOTE_TEMPLATES: NoteTemplate[] = [
     content: 'Table description and business rules...',
     size: { width: 250, height: 120 },
     color: '#98fb98',
-    format: NoteFormat.MARKDOWN
+    format: NoteFormat.MARKDOWN,
   },
   {
     id: 'schema-info',
@@ -88,6 +88,6 @@ export const DEFAULT_NOTE_TEMPLATES: NoteTemplate[] = [
     content: '## Schema Notes\n\nPurpose and guidelines...',
     size: { width: 300, height: 150 },
     color: '#87ceeb',
-    format: NoteFormat.MARKDOWN
-  }
+    format: NoteFormat.MARKDOWN,
+  },
 ];
