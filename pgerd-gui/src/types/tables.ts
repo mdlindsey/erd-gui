@@ -50,7 +50,7 @@ export enum ConstraintType {
   FOREIGN_KEY = 'foreign_key',
   UNIQUE = 'unique',
   CHECK = 'check',
-  EXCLUDE = 'exclude'
+  EXCLUDE = 'exclude',
 }
 
 export enum IndexType {
@@ -59,7 +59,7 @@ export enum IndexType {
   GIST = 'gist',
   SPGIST = 'spgist',
   GIN = 'gin',
-  BRIN = 'brin'
+  BRIN = 'brin',
 }
 
 export interface TablesState {

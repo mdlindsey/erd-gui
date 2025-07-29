@@ -16,27 +16,22 @@ export const selectUI = (state: RootState) => state.ui;
 // Canvas selectors
 export const selectViewport = createSelector(
   [selectCanvas],
-  (canvas) => canvas.viewport
+  canvas => canvas.viewport
 );
 
-export const selectGridSettings = createSelector(
-  [selectCanvas],
-  (canvas) => ({
-    visible: canvas.gridVisible,
-    snapToGrid: canvas.snapToGrid,
-    size: canvas.gridSize,
-  })
-);
+export const selectGridSettings = createSelector([selectCanvas], canvas => ({
+  visible: canvas.gridVisible,
+  snapToGrid: canvas.snapToGrid,
+  size: canvas.gridSize,
+}));
 
 // Table selectors
-export const selectAllTables = createSelector(
-  [selectTables],
-  (tables) => tables.allIds.map(id => tables.byId[id])
+export const selectAllTables = createSelector([selectTables], tables =>
+  tables.allIds.map(id => tables.byId[id])
 );
 
-export const selectSelectedTables = createSelector(
-  [selectTables],
-  (tables) => tables.selectedIds.map(id => tables.byId[id]).filter(Boolean)
+export const selectSelectedTables = createSelector([selectTables], tables =>
+  tables.selectedIds.map(id => tables.byId[id]).filter(Boolean)
 );
 
 export const selectTableById = createSelector(
@@ -52,12 +47,12 @@ export const selectTablesByIds = createSelector(
 // Relationship selectors
 export const selectAllRelationships = createSelector(
   [selectRelationships],
-  (relationships) => relationships.allIds.map(id => relationships.byId[id])
+  relationships => relationships.allIds.map(id => relationships.byId[id])
 );
 
 export const selectRelationshipsBySourceTable = createSelector(
   [selectRelationships, (_state: RootState, tableId: string) => tableId],
-  (relationships, tableId) => 
+  (relationships, tableId) =>
     (relationships.bySourceTable[tableId] || [])
       .map(id => relationships.byId[id])
       .filter(Boolean)
@@ -65,7 +60,7 @@ export const selectRelationshipsBySourceTable = createSelector(
 
 export const selectRelationshipsByTargetTable = createSelector(
   [selectRelationships, (_state: RootState, tableId: string) => tableId],
-  (relationships, tableId) => 
+  (relationships, tableId) =>
     (relationships.byTargetTable[tableId] || [])
       .map(id => relationships.byId[id])
       .filter(Boolean)
@@ -82,46 +77,37 @@ export const selectRelationshipsByTable = createSelector(
 );
 
 // Note selectors
-export const selectAllNotes = createSelector(
-  [selectNotes],
-  (notes) => notes.allIds.map(id => notes.byId[id])
+export const selectAllNotes = createSelector([selectNotes], notes =>
+  notes.allIds.map(id => notes.byId[id])
 );
 
 export const selectNotesByTable = createSelector(
   [selectNotes, (_state: RootState, tableId: string) => tableId],
-  (notes, tableId) => 
-    (notes.byTableId[tableId] || [])
-      .map(id => notes.byId[id])
-      .filter(Boolean)
+  (notes, tableId) =>
+    (notes.byTableId[tableId] || []).map(id => notes.byId[id]).filter(Boolean)
 );
 
-export const selectVisibleNotes = createSelector(
-  [selectNotes],
-  (notes) => {
-    if (notes.showAllNotes) {
-      return notes.allIds.map(id => notes.byId[id]);
-    }
-    return notes.allIds
-      .map(id => notes.byId[id])
-      .filter(note => !note.collapsed);
+export const selectVisibleNotes = createSelector([selectNotes], notes => {
+  if (notes.showAllNotes) {
+    return notes.allIds.map(id => notes.byId[id]);
   }
-);
+  return notes.allIds.map(id => notes.byId[id]).filter(note => !note.collapsed);
+});
 
 // User selectors
-export const selectAllUsers = createSelector(
-  [selectUsers],
-  (users) => users.allIds.map(id => users.byId[id])
+export const selectAllUsers = createSelector([selectUsers], users =>
+  users.allIds.map(id => users.byId[id])
 );
 
 // Permission selectors
 export const selectAllPermissions = createSelector(
   [selectPermissions],
-  (permissions) => permissions.allIds.map(id => permissions.byId[id])
+  permissions => permissions.allIds.map(id => permissions.byId[id])
 );
 
 export const selectPermissionsByTable = createSelector(
   [selectPermissions, (_state: RootState, tableId: string) => tableId],
-  (permissions, tableId) => 
+  (permissions, tableId) =>
     (permissions.byTableId[tableId] || [])
       .map(id => permissions.byId[id])
       .filter(Boolean)
@@ -129,7 +115,7 @@ export const selectPermissionsByTable = createSelector(
 
 export const selectPermissionsByUser = createSelector(
   [selectPermissions, (_state: RootState, userId: string) => userId],
-  (permissions, userId) => 
+  (permissions, userId) =>
     (permissions.byUserId[userId] || [])
       .map(id => permissions.byId[id])
       .filter(Boolean)
@@ -138,12 +124,12 @@ export const selectPermissionsByUser = createSelector(
 // Schema box selectors
 export const selectAllSchemaBoxes = createSelector(
   [selectSchemaBoxes],
-  (schemaBoxes) => schemaBoxes.allIds.map(id => schemaBoxes.byId[id])
+  schemaBoxes => schemaBoxes.allIds.map(id => schemaBoxes.byId[id])
 );
 
 export const selectSchemaBoxesByTable = createSelector(
   [selectSchemaBoxes, (_state: RootState, tableId: string) => tableId],
-  (schemaBoxes, tableId) => 
+  (schemaBoxes, tableId) =>
     schemaBoxes.allIds
       .map(id => schemaBoxes.byId[id])
       .filter(box => box.tableIds.includes(tableId))
@@ -195,17 +181,14 @@ export const selectDiagramBounds = createSelector(
 // UI selectors
 export const selectCurrentTool = createSelector(
   [selectUI],
-  (ui) => ui.selectedTool
+  ui => ui.selectedTool
 );
 
-export const selectTheme = createSelector(
-  [selectUI],
-  (ui) => ui.theme
-);
+export const selectTheme = createSelector([selectUI], ui => ui.theme);
 
 export const selectActivePanel = createSelector(
   [selectUI],
-  (ui) => ui.activePanel
+  ui => ui.activePanel
 );
 
 // Search/filter selectors
@@ -214,9 +197,10 @@ export const selectTablesByName = createSelector(
   (tables, searchTerm) => {
     if (!searchTerm.trim()) return tables;
     const term = searchTerm.toLowerCase();
-    return tables.filter(table => 
-      table.name.toLowerCase().includes(term) ||
-      table.schemaName?.toLowerCase().includes(term)
+    return tables.filter(
+      table =>
+        table.name.toLowerCase().includes(term) ||
+        table.schemaName?.toLowerCase().includes(term)
     );
   }
 );
@@ -227,7 +211,7 @@ export const selectColumnsByName = createSelector(
     if (!searchTerm.trim()) return [];
     const term = searchTerm.toLowerCase();
     const results: Array<{ table: any; column: any }> = [];
-    
+
     tables.forEach(table => {
       table.columns.forEach(column => {
         if (column.name.toLowerCase().includes(term)) {
@@ -235,7 +219,7 @@ export const selectColumnsByName = createSelector(
         }
       });
     });
-    
+
     return results;
   }
 );

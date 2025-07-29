@@ -1,14 +1,14 @@
 // Concrete Redux implementation of StateService
 
 import { Store } from '@reduxjs/toolkit';
-import { 
-  StateService, 
-  AppState, 
-  Viewport, 
-  Position, 
-  Tool, 
-  Panel, 
-  Theme 
+import {
+  StateService,
+  AppState,
+  Viewport,
+  Position,
+  Tool,
+  Panel,
+  Theme,
 } from '../types';
 import {
   RootState,
@@ -32,7 +32,7 @@ export class ReduxStateService extends StateService {
   constructor(store: Store<RootState>) {
     super();
     this.store = store;
-    
+
     // Subscribe to store changes and notify our listeners
     this.store.subscribe(() => {
       const state = this.getState();
@@ -55,13 +55,15 @@ export class ReduxStateService extends StateService {
 
   // Table operations
   addTable(table: Omit<Table, 'id'>): string {
-    this.store.dispatch(tablesActions.addTable({
-      name: table.name,
-      position: table.position,
-      schemaName: table.schemaName,
-      comment: table.comment,
-    }));
-    
+    this.store.dispatch(
+      tablesActions.addTable({
+        name: table.name,
+        position: table.position,
+        schemaName: table.schemaName,
+        comment: table.comment,
+      })
+    );
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.tables.allIds[state.tables.allIds.length - 1];
@@ -77,7 +79,7 @@ export class ReduxStateService extends StateService {
     this.store.dispatch(notesActions.deleteNotesByTable(id));
     this.store.dispatch(permissionsActions.deletePermissionsByTable(id));
     this.store.dispatch(schemaBoxesActions.removeTableFromAllSchemaBoxes(id));
-    
+
     // Then delete the table
     this.store.dispatch(tablesActions.deleteTable(id));
   }
@@ -93,7 +95,7 @@ export class ReduxStateService extends StateService {
   // Column operations
   addColumn(tableId: string, column: Omit<Column, 'id'>): string {
     this.store.dispatch(tablesActions.addColumn({ tableId, column }));
-    
+
     // Get the generated ID from the state
     const state = this.store.getState();
     const table = state.tables.byId[tableId];
@@ -103,8 +105,14 @@ export class ReduxStateService extends StateService {
     throw new Error(`Failed to add column to table ${tableId}`);
   }
 
-  updateColumn(tableId: string, columnId: string, updates: Partial<Column>): void {
-    this.store.dispatch(tablesActions.updateColumn({ tableId, columnId, updates }));
+  updateColumn(
+    tableId: string,
+    columnId: string,
+    updates: Partial<Column>
+  ): void {
+    this.store.dispatch(
+      tablesActions.updateColumn({ tableId, columnId, updates })
+    );
   }
 
   deleteColumn(tableId: string, columnId: string): void {
@@ -112,37 +120,43 @@ export class ReduxStateService extends StateService {
     const state = this.store.getState();
     const relationshipsToDelete = state.relationships.allIds.filter(relId => {
       const rel = state.relationships.byId[relId];
-      return (rel.sourceTableId === tableId && rel.sourceColumnId === columnId) ||
-             (rel.targetTableId === tableId && rel.targetColumnId === columnId);
+      return (
+        (rel.sourceTableId === tableId && rel.sourceColumnId === columnId) ||
+        (rel.targetTableId === tableId && rel.targetColumnId === columnId)
+      );
     });
-    
+
     relationshipsToDelete.forEach(relId => {
       this.store.dispatch(relationshipsActions.deleteRelationship(relId));
     });
-    
+
     this.store.dispatch(tablesActions.deleteColumn({ tableId, columnId }));
   }
 
   // Relationship operations
   addRelationship(relationship: Omit<Relationship, 'id'>): string {
-    this.store.dispatch(relationshipsActions.addRelationship({
-      sourceTableId: relationship.sourceTableId,
-      targetTableId: relationship.targetTableId,
-      sourceColumnId: relationship.sourceColumnId,
-      targetColumnId: relationship.targetColumnId,
-      type: relationship.type,
-      onDelete: relationship.onDelete,
-      onUpdate: relationship.onUpdate,
-      name: relationship.name,
-    }));
-    
+    this.store.dispatch(
+      relationshipsActions.addRelationship({
+        sourceTableId: relationship.sourceTableId,
+        targetTableId: relationship.targetTableId,
+        sourceColumnId: relationship.sourceColumnId,
+        targetColumnId: relationship.targetColumnId,
+        type: relationship.type,
+        onDelete: relationship.onDelete,
+        onUpdate: relationship.onUpdate,
+        name: relationship.name,
+      })
+    );
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.relationships.allIds[state.relationships.allIds.length - 1];
   }
 
   updateRelationship(id: string, updates: Partial<Relationship>): void {
-    this.store.dispatch(relationshipsActions.updateRelationship({ id, updates }));
+    this.store.dispatch(
+      relationshipsActions.updateRelationship({ id, updates })
+    );
   }
 
   deleteRelationship(id: string): void {
@@ -151,15 +165,17 @@ export class ReduxStateService extends StateService {
 
   // Note operations
   addNote(note: Omit<Note, 'id'>): string {
-    this.store.dispatch(notesActions.addNote({
-      content: note.content,
-      position: note.position,
-      size: note.size,
-      tableId: note.tableId,
-      color: note.color,
-      format: note.format,
-    }));
-    
+    this.store.dispatch(
+      notesActions.addNote({
+        content: note.content,
+        position: note.position,
+        size: note.size,
+        tableId: note.tableId,
+        color: note.color,
+        format: note.format,
+      })
+    );
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.notes.allIds[state.notes.allIds.length - 1];
@@ -176,7 +192,7 @@ export class ReduxStateService extends StateService {
   // User operations
   addUser(user: Omit<import('../types').User, 'id'>): string {
     this.store.dispatch(usersActions.addUser(user));
-    
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.users.allIds[state.users.allIds.length - 1];
@@ -195,13 +211,16 @@ export class ReduxStateService extends StateService {
   // Permission operations
   addPermission(permission: Omit<import('../types').Permission, 'id'>): string {
     this.store.dispatch(permissionsActions.addPermission(permission));
-    
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.permissions.allIds[state.permissions.allIds.length - 1];
   }
 
-  updatePermission(id: string, updates: Partial<import('../types').Permission>): void {
+  updatePermission(
+    id: string,
+    updates: Partial<import('../types').Permission>
+  ): void {
     this.store.dispatch(permissionsActions.updatePermission({ id, updates }));
   }
 
@@ -212,13 +231,16 @@ export class ReduxStateService extends StateService {
   // Schema box operations
   addSchemaBox(schemaBox: Omit<import('../types').SchemaBox, 'id'>): string {
     this.store.dispatch(schemaBoxesActions.addSchemaBox(schemaBox));
-    
+
     // Get the generated ID from the state
     const state = this.store.getState();
     return state.schemaBoxes.allIds[state.schemaBoxes.allIds.length - 1];
   }
 
-  updateSchemaBox(id: string, updates: Partial<import('../types').SchemaBox>): void {
+  updateSchemaBox(
+    id: string,
+    updates: Partial<import('../types').SchemaBox>
+  ): void {
     this.store.dispatch(schemaBoxesActions.updateSchemaBox({ id, updates }));
   }
 
@@ -250,7 +272,7 @@ export class ReduxStateService extends StateService {
   // State access
   getState(): AppState {
     const state = this.store.getState();
-    
+
     // Transform Redux state to match AppState interface
     return {
       canvas: state.canvas,
@@ -266,7 +288,7 @@ export class ReduxStateService extends StateService {
 
   subscribe(listener: (state: AppState) => void): () => void {
     this.listeners.add(listener);
-    
+
     // Return unsubscribe function
     return () => {
       this.listeners.delete(listener);
@@ -275,8 +297,10 @@ export class ReduxStateService extends StateService {
 
   // Additional utility methods for complex operations
   duplicateTable(id: string, position: Position, nameSuffix?: string): string {
-    this.store.dispatch(tablesActions.duplicateTable({ id, position, nameSuffix }));
-    
+    this.store.dispatch(
+      tablesActions.duplicateTable({ id, position, nameSuffix })
+    );
+
     const state = this.store.getState();
     return state.tables.allIds[state.tables.allIds.length - 1];
   }
@@ -285,11 +309,14 @@ export class ReduxStateService extends StateService {
     this.store.dispatch(tablesActions.moveMultipleTables({ updates }));
   }
 
-  fitToView(viewportSize: { width: number; height: number }, padding = 50): void {
+  fitToView(
+    viewportSize: { width: number; height: number },
+    padding = 50
+  ): void {
     const state = this.store.getState();
     const tables = state.tables.allIds.map(id => state.tables.byId[id]);
     const notes = state.notes.allIds.map(id => state.notes.byId[id]);
-    
+
     if (tables.length === 0 && notes.length === 0) {
       return;
     }
@@ -322,7 +349,9 @@ export class ReduxStateService extends StateService {
       height: maxY - minY,
     };
 
-    this.store.dispatch(canvasActions.fitToView({ bounds, viewportSize, padding }));
+    this.store.dispatch(
+      canvasActions.fitToView({ bounds, viewportSize, padding })
+    );
   }
 
   // Bulk operations

@@ -25,7 +25,7 @@ export const store = configureStore({
     schemaBoxes: schemaBoxesSlice.reducer,
     ui: uiSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types for Date objects in notes

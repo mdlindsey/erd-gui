@@ -27,82 +27,94 @@ import 'reactflow/dist/style.css';
 import { useCanvasService } from '../../services';
 
 // Custom node types for ERD entities
-const TableNode = React.memo(({ data, selected }: { data: any; selected: boolean }) => {
-  return (
-    <div
-      className={`table-node ${selected ? 'selected' : ''}`}
-      style={{
-        background: '#fff',
-        border: '2px solid #ddd',
-        borderRadius: '8px',
-        padding: '12px',
-        minWidth: '200px',
-        boxShadow: selected ? '0 0 0 2px #3b82f6' : '0 2px 4px rgba(0,0,0,0.1)',
-      }}
-    >
+const TableNode = React.memo(
+  ({ data, selected }: { data: any; selected: boolean }) => {
+    return (
       <div
+        className={`table-node ${selected ? 'selected' : ''}`}
         style={{
-          fontWeight: 'bold',
-          marginBottom: '8px',
-          borderBottom: '1px solid #eee',
-          paddingBottom: '4px',
+          background: '#fff',
+          border: '2px solid #ddd',
+          borderRadius: '8px',
+          padding: '12px',
+          minWidth: '200px',
+          boxShadow: selected
+            ? '0 0 0 2px #3b82f6'
+            : '0 2px 4px rgba(0,0,0,0.1)',
         }}
       >
-        {data.tableName || 'Table'}
+        <div
+          style={{
+            fontWeight: 'bold',
+            marginBottom: '8px',
+            borderBottom: '1px solid #eee',
+            paddingBottom: '4px',
+          }}
+        >
+          {data.tableName || 'Table'}
+        </div>
+        <div style={{ fontSize: '12px', color: '#666' }}>
+          {data.columns?.map((col: any, idx: number) => (
+            <div key={idx} style={{ margin: '2px 0' }}>
+              {col.name} <span style={{ color: '#999' }}>({col.type})</span>
+            </div>
+          )) || 'No columns'}
+        </div>
       </div>
-      <div style={{ fontSize: '12px', color: '#666' }}>
-        {data.columns?.map((col: any, idx: number) => (
-          <div key={idx} style={{ margin: '2px 0' }}>
-            {col.name} <span style={{ color: '#999' }}>({col.type})</span>
-          </div>
-        )) || 'No columns'}
+    );
+  }
+);
+
+const NoteNode = React.memo(
+  ({ data, selected }: { data: any; selected: boolean }) => {
+    return (
+      <div
+        className={`note-node ${selected ? 'selected' : ''}`}
+        style={{
+          background: data.color || '#ffd700',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          padding: '8px',
+          minWidth: '150px',
+          maxWidth: '300px',
+          boxShadow: selected
+            ? '0 0 0 2px #3b82f6'
+            : '0 1px 3px rgba(0,0,0,0.1)',
+          fontSize: '14px',
+        }}
+      >
+        {data.content || 'Note content'}
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
-const NoteNode = React.memo(({ data, selected }: { data: any; selected: boolean }) => {
-  return (
-    <div
-      className={`note-node ${selected ? 'selected' : ''}`}
-      style={{
-        background: data.color || '#ffd700',
-        border: '1px solid #ddd',
-        borderRadius: '4px',
-        padding: '8px',
-        minWidth: '150px',
-        maxWidth: '300px',
-        boxShadow: selected ? '0 0 0 2px #3b82f6' : '0 1px 3px rgba(0,0,0,0.1)',
-        fontSize: '14px',
-      }}
-    >
-      {data.content || 'Note content'}
-    </div>
-  );
-});
-
-const UserNode = React.memo(({ data, selected }: { data: any; selected: boolean }) => {
-  return (
-    <div
-      className={`user-node ${selected ? 'selected' : ''}`}
-      style={{
-        background: data.color || '#e0f2fe',
-        border: '2px solid #0277bd',
-        borderRadius: '50%',
-        padding: '16px',
-        width: '80px',
-        height: '80px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 'bold',
-        boxShadow: selected ? '0 0 0 2px #3b82f6' : '0 2px 4px rgba(0,0,0,0.1)',
-      }}
-    >
-      {data.userName || 'User'}
-    </div>
-  );
-});
+const UserNode = React.memo(
+  ({ data, selected }: { data: any; selected: boolean }) => {
+    return (
+      <div
+        className={`user-node ${selected ? 'selected' : ''}`}
+        style={{
+          background: data.color || '#e0f2fe',
+          border: '2px solid #0277bd',
+          borderRadius: '50%',
+          padding: '16px',
+          width: '80px',
+          height: '80px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 'bold',
+          boxShadow: selected
+            ? '0 0 0 2px #3b82f6'
+            : '0 2px 4px rgba(0,0,0,0.1)',
+        }}
+      >
+        {data.userName || 'User'}
+      </div>
+    );
+  }
+);
 
 // Define node types
 const nodeTypes: NodeTypes = {
@@ -131,89 +143,104 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
   const canvasService = useCanvasService();
 
   // Sample nodes and edges for initial display
-  const initialNodes: Node[] = useMemo(() => [
-    {
-      id: 'sample-table-1',
-      type: 'table',
-      position: { x: 100, y: 100 },
-      data: {
-        tableName: 'users',
-        columns: [
-          { name: 'id', type: 'integer' },
-          { name: 'email', type: 'varchar' },
-          { name: 'created_at', type: 'timestamp' },
-        ],
+  const initialNodes: Node[] = useMemo(
+    () => [
+      {
+        id: 'sample-table-1',
+        type: 'table',
+        position: { x: 100, y: 100 },
+        data: {
+          tableName: 'users',
+          columns: [
+            { name: 'id', type: 'integer' },
+            { name: 'email', type: 'varchar' },
+            { name: 'created_at', type: 'timestamp' },
+          ],
+        },
       },
-    },
-    {
-      id: 'sample-table-2',
-      type: 'table',
-      position: { x: 400, y: 100 },
-      data: {
-        tableName: 'posts',
-        columns: [
-          { name: 'id', type: 'integer' },
-          { name: 'user_id', type: 'integer' },
-          { name: 'title', type: 'varchar' },
-        ],
+      {
+        id: 'sample-table-2',
+        type: 'table',
+        position: { x: 400, y: 100 },
+        data: {
+          tableName: 'posts',
+          columns: [
+            { name: 'id', type: 'integer' },
+            { name: 'user_id', type: 'integer' },
+            { name: 'title', type: 'varchar' },
+          ],
+        },
       },
-    },
-    {
-      id: 'sample-note-1',
-      type: 'note',
-      position: { x: 100, y: 300 },
-      data: {
-        content: 'User authentication table',
-        color: '#e8f5e8',
+      {
+        id: 'sample-note-1',
+        type: 'note',
+        position: { x: 100, y: 300 },
+        data: {
+          content: 'User authentication table',
+          color: '#e8f5e8',
+        },
       },
-    },
-  ], []);
+    ],
+    []
+  );
 
-  const initialEdges: Edge[] = useMemo(() => [
-    {
-      id: 'relationship-1',
-      source: 'sample-table-1',
-      target: 'sample-table-2',
-      animated: false,
-      style: { stroke: '#333', strokeWidth: 2 },
-      markerEnd: { type: MarkerType.Arrow, color: '#333' },
-      data: {
-        relationshipType: 'one-to-many',
-        sourceColumn: 'id',
-        targetColumn: 'user_id',
+  const initialEdges: Edge[] = useMemo(
+    () => [
+      {
+        id: 'relationship-1',
+        source: 'sample-table-1',
+        target: 'sample-table-2',
+        animated: false,
+        style: { stroke: '#333', strokeWidth: 2 },
+        markerEnd: { type: MarkerType.Arrow, color: '#333' },
+        data: {
+          relationshipType: 'one-to-many',
+          sourceColumn: 'id',
+          targetColumn: 'user_id',
+        },
       },
-    },
-  ], []);
+    ],
+    []
+  );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // Handle viewport changes and sync with canvas service
-  const onMove: OnMove = useCallback((_event, viewport) => {
-    canvasService.updateViewport(viewport);
-  }, [canvasService]);
+  const onMove: OnMove = useCallback(
+    (_event, viewport) => {
+      canvasService.updateViewport(viewport);
+    },
+    [canvasService]
+  );
 
   // Handle new connections
-  const onConnect: OnConnect = useCallback((params: Connection) => {
-    setEdges((eds) => addEdge(params, eds));
-  }, [setEdges]);
+  const onConnect: OnConnect = useCallback(
+    (params: Connection) => {
+      setEdges(eds => addEdge(params, eds));
+    },
+    [setEdges]
+  );
 
   // Handle node drag end to snap to grid if enabled
-  const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
-    if (canvasService.snapToGrid) {
-      const gridSize = canvasService.gridSize;
-      const snappedX = Math.round(node.position.x / gridSize) * gridSize;
-      const snappedY = Math.round(node.position.y / gridSize) * gridSize;
-      
-      setNodes((nodes) =>
-        nodes.map((n) =>
-          n.id === node.id
-            ? { ...n, position: { x: snappedX, y: snappedY } }
-            : n
-        )
-      );
-    }
-  }, [canvasService.snapToGrid, canvasService.gridSize, setNodes]);
+  const onNodeDragStop = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (canvasService.snapToGrid) {
+        const gridSize = canvasService.gridSize;
+        const snappedX = Math.round(node.position.x / gridSize) * gridSize;
+        const snappedY = Math.round(node.position.y / gridSize) * gridSize;
+
+        setNodes(nodes =>
+          nodes.map(n =>
+            n.id === node.id
+              ? { ...n, position: { x: snappedX, y: snappedY } }
+              : n
+          )
+        );
+      }
+    },
+    [canvasService.snapToGrid, canvasService.gridSize, setNodes]
+  );
 
   // Fit view helper (placeholder for now)
   const handleFitView = useCallback(() => {
@@ -263,7 +290,7 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
             variant={BackgroundVariant.Dots}
           />
         )}
-        
+
         <Controls
           showZoom={true}
           showFitView={true}
@@ -274,7 +301,7 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
             maxZoom: canvasService.zoomRange.max,
           }}
         />
-        
+
         <MiniMap
           nodeColor="#e0e0e0"
           nodeStrokeWidth={2}
@@ -349,7 +376,7 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
 Canvas.displayName = 'Canvas';
 
 // Wrapper component with ReactFlowProvider
-const CanvasWithProvider: React.FC<CanvasProps> = (props) => {
+const CanvasWithProvider: React.FC<CanvasProps> = props => {
   return (
     <ReactFlowProvider>
       <Canvas {...props} />

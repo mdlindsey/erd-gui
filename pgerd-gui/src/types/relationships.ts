@@ -29,7 +29,7 @@ export interface ControlPoint {
 
 export enum ControlPointType {
   BEND = 'bend',
-  ANCHOR = 'anchor'
+  ANCHOR = 'anchor',
 }
 
 export enum RelationshipType {
@@ -39,7 +39,7 @@ export enum RelationshipType {
   // Additional relationship types
   SELF_REFERENCING = 'self-referencing',
   IDENTIFYING = 'identifying',
-  NON_IDENTIFYING = 'non-identifying'
+  NON_IDENTIFYING = 'non-identifying',
 }
 
 export enum CascadeAction {
@@ -47,13 +47,13 @@ export enum CascadeAction {
   SET_NULL = 'SET NULL',
   SET_DEFAULT = 'SET DEFAULT',
   RESTRICT = 'RESTRICT',
-  NO_ACTION = 'NO ACTION'
+  NO_ACTION = 'NO ACTION',
 }
 
 export enum LineStyle {
   SOLID = 'solid',
   DASHED = 'dashed',
-  DOTTED = 'dotted'
+  DOTTED = 'dotted',
 }
 
 export interface RelationshipsState {

@@ -31,7 +31,7 @@ export class ServiceFactory {
 
   createService(config: ServiceConfig): StateService {
     const key = this.generateServiceKey(config);
-    
+
     // Return existing service if already created
     if (this.services.has(key)) {
       return this.services.get(key)!;
@@ -46,15 +46,15 @@ export class ServiceFactory {
         }
         service = new ReduxStateService(config.store);
         break;
-        
+
       case 'memory':
         // Future implementation: In-memory state service
         throw new Error('Memory service not yet implemented');
-        
+
       case 'mock':
         // Future implementation: Mock service for testing
         throw new Error('Mock service not yet implemented');
-        
+
       default:
         throw new Error(`Unknown service type: ${config.type}`);
     }
@@ -69,7 +69,9 @@ export class ServiceFactory {
 
   getCurrentService(): StateService {
     if (!this.currentService) {
-      throw new Error('No current service set. Call setCurrentService() first.');
+      throw new Error(
+        'No current service set. Call setCurrentService() first.'
+      );
     }
     return this.currentService;
   }
@@ -93,7 +95,9 @@ export function createStateService(config: ServiceConfig): StateService {
 }
 
 // Default service initialization
-export function initializeDefaultService(store: Store<RootState>): StateService {
+export function initializeDefaultService(
+  store: Store<RootState>
+): StateService {
   return createStateService({
     type: 'redux',
     store,
