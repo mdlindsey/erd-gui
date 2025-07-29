@@ -580,4 +580,269 @@ class CommandManager {
 
 This technical design provides a solid foundation for building a performant, maintainable, and extensible Postgres ERD GUI while ensuring all MVP and future requirements can be met efficiently.
 
+## MVP Milestones
+
+July 28, 2025 @ 11:52pm
+
+### Overview
+
+This milestone plan is designed for a single senior engineer working 40 hours per week. Each milestone represents 1-2 weeks of focused development with clear deliverables and acceptance criteria. The sequence is designed to ensure meaningful progress toward E2E completion while building a solid foundation.
+
+### Milestone 1: Project Foundation & Core Infrastructure (Week 1-2)
+
+**Duration**: 2 weeks  
+**Goal**: Establish the project foundation with core infrastructure and basic canvas functionality.
+
+#### Deliverables
+- [ ] Project setup with Vite, React 18+, TypeScript
+- [ ] Redux Toolkit store with abstracted service layer
+- [ ] React Flow canvas integration with basic zoom/pan
+- [ ] 15px grid system with snap-to-grid functionality
+- [ ] Basic project structure and component architecture
+- [ ] ESLint + Prettier configuration
+- [ ] Vitest + React Testing Library setup with 80% coverage enforcement
+
+#### Acceptance Criteria
+- Canvas renders with zoom controls (25% to 400%)
+- Pan functionality works smoothly
+- Grid system visible and snap-to-grid functional
+- Project builds without errors
+- Test suite runs with 80% coverage
+- Code quality tools properly configured
+
+#### Technical Focus
+- Establish clean architecture patterns
+- Set up proper TypeScript configuration
+- Implement abstracted state management
+- Create reusable UI component foundation
+
+---
+
+### Milestone 2: Table Components & Basic State Management (Week 3-4)
+
+**Duration**: 2 weeks  
+**Goal**: Create core table components with full CRUD functionality and state management.
+
+#### Deliverables
+- [ ] Table data models and TypeScript interfaces
+- [ ] Table component with basic rendering
+- [ ] Table creation/editing modal/form
+- [ ] Column management (add/remove columns)
+- [ ] Postgres column type support
+- [ ] Table positioning and drag/drop
+- [ ] Table selection and bulk operations
+- [ ] Local storage integration for auto-save
+
+#### Acceptance Criteria
+- Can create new tables with custom names
+- Can add/remove columns with proper Postgres types
+- Tables can be positioned on canvas via drag/drop
+- Table selection works (single and multiple)
+- Data persists in local storage
+- All table operations have comprehensive tests
+
+#### Technical Focus
+- Custom React Flow node types for tables
+- Form validation and error handling
+- Optimized re-rendering with React.memo
+- Proper state management patterns
+
+---
+
+### Milestone 3: Relationship Management & Visual Connections (Week 5-6)
+
+**Duration**: 2 weeks  
+**Goal**: Implement foreign key relationships with visual connector lines and relationship management.
+
+#### Deliverables
+- [ ] Relationship data models and interfaces
+- [ ] Visual connector lines between tables
+- [ ] Relationship creation via drag between columns
+- [ ] Relationship editing (cascade options, constraint names)
+- [ ] Custom routing for connector lines
+- [ ] Relationship validation and error handling
+- [ ] Delete relationships with confirmation
+
+#### Acceptance Criteria
+- Can create relationships by dragging between table columns
+- Connector lines render correctly and update with table movement
+- Relationship properties can be edited
+- Custom routing points work for complex layouts
+- Invalid relationships are prevented with clear error messages
+- All relationship operations have comprehensive tests
+
+#### Technical Focus
+- Custom React Flow edge types
+- Pathfinding algorithms for connector routing
+- Relationship validation logic
+- Performance optimization for large numbers of relationships
+
+---
+
+### Milestone 4: Notes System & Enhanced UX (Week 7-8)
+
+**Duration**: 2 weeks  
+**Goal**: Implement notes system and enhance user experience with undo/redo functionality.
+
+#### Deliverables
+- [ ] Notes data model and components
+- [ ] Collapsible/expandable notes on tables
+- [ ] Add/remove notes functionality
+- [ ] Undo/redo system with command pattern
+- [ ] Enhanced table resizing based on content
+- [ ] Improved table selection and bulk operations
+- [ ] Responsive design for desktop and tablet
+
+#### Acceptance Criteria
+- Notes can be added to tables and are collapsible
+- Undo/redo works for all user actions
+- Tables resize appropriately based on content
+- Bulk operations work smoothly
+- Interface is responsive on different screen sizes
+- All notes functionality has comprehensive tests
+
+#### Technical Focus
+- Command pattern implementation
+- State history management
+- Responsive design patterns
+- Accessibility improvements
+
+---
+
+### Milestone 5: Import/Export & Data Validation (Week 9-10)
+
+**Duration**: 2 weeks  
+**Goal**: Implement `.pgerd` format import/export with comprehensive data validation.
+
+#### Deliverables
+- [ ] `.pgerd` format specification implementation
+- [ ] Import functionality (file upload and copy/paste)
+- [ ] Export functionality (download and copy to clipboard)
+- [ ] Data validation for relationships and references
+- [ ] Error handling for invalid imports
+- [ ] Format versioning and migration support
+- [ ] Comprehensive validation tests
+
+#### Acceptance Criteria
+- Can import `.pgerd` files successfully
+- Can export current state to `.pgerd` format
+- Copy/paste JSON functionality works
+- Invalid data is caught with clear error messages
+- Format versioning handles future compatibility
+- All import/export operations have comprehensive tests
+
+#### Technical Focus
+- File handling and blob management
+- JSON schema validation
+- Error boundary implementation
+- Data migration strategies
+
+---
+
+### Milestone 6: Performance Optimization & Testing (Week 11-12)
+
+**Duration**: 2 weeks  
+**Goal**: Optimize performance for large diagrams and complete comprehensive testing.
+
+#### Deliverables
+- [ ] Performance benchmarks for 50+ tables
+- [ ] Virtualization for large diagrams
+- [ ] Memory usage optimization
+- [ ] Interaction response time optimization
+- [ ] Comprehensive integration tests
+- [ ] Performance testing automation
+- [ ] Cross-browser testing (Chrome focus)
+- [ ] Accessibility testing and improvements
+
+#### Acceptance Criteria
+- Handles 50+ tables without significant lag (< 100ms response time)
+- Memory usage remains stable with large diagrams
+- All user workflows have integration tests
+- Performance benchmarks pass consistently
+- Accessibility standards are met
+- 80% code coverage maintained
+
+#### Technical Focus
+- React Flow optimization techniques
+- Virtualization strategies
+- Performance monitoring and profiling
+- Comprehensive test coverage
+
+---
+
+### Milestone 7: Polish & Production Readiness (Week 13-14)
+
+**Duration**: 2 weeks  
+**Goal**: Final polish, bug fixes, and production readiness.
+
+#### Deliverables
+- [ ] UI/UX polish and refinement
+- [ ] Bug fixes and edge case handling
+- [ ] Error boundary improvements
+- [ ] Loading states and user feedback
+- [ ] Documentation updates
+- [ ] Production build optimization
+- [ ] Final testing and validation
+- [ ] Deployment preparation
+
+#### Acceptance Criteria
+- All features work smoothly without bugs
+- User experience is polished and intuitive
+- Error handling is robust and user-friendly
+- Application is ready for production deployment
+- Documentation is complete and accurate
+- Performance meets all requirements
+
+#### Technical Focus
+- Production build optimization
+- Error handling and user feedback
+- Final testing and validation
+- Documentation and deployment preparation
+
+---
+
+### Success Metrics
+
+#### Technical Metrics
+- **Code Coverage**: Maintain 80%+ throughout development
+- **Performance**: < 100ms response time with 50+ tables
+- **Bundle Size**: Optimized for fast loading
+- **Test Coverage**: All critical user workflows covered
+
+#### Quality Metrics
+- **Bug Count**: Zero critical bugs in final milestone
+- **User Experience**: Intuitive and responsive interface
+- **Accessibility**: WCAG 2.1 AA compliance
+- **Documentation**: Complete and accurate
+
+#### Delivery Metrics
+- **Timeline**: Complete within 14 weeks
+- **Scope**: All MVP features delivered
+- **Quality**: Production-ready code
+- **Maintainability**: Clean, well-documented codebase
+
+### Risk Mitigation
+
+#### Technical Risks
+- **React Flow Complexity**: Allocate extra time for custom node/edge development
+- **Performance Issues**: Early performance testing and optimization
+- **State Management Complexity**: Use abstracted service layer for flexibility
+
+#### Timeline Risks
+- **Scope Creep**: Strict adherence to MVP scope
+- **Technical Debt**: Regular refactoring and code review
+- **Testing Overhead**: Automated testing from day one
+
+### Post-MVP Planning
+
+Upon successful completion of MVP milestones, the following features will be prioritized for post-MVP development:
+
+1. **User Management**: User entities with table-level permissions
+2. **Schema Boxes**: Visual grouping for schema organization  
+3. **Advanced Notes**: Rich text/markdown support
+4. **Advanced Relationships**: Many-to-many, inheritance
+5. **SQL Generation**: DDL and migration scripts
+
+This milestone plan ensures steady progress toward a complete, production-ready Postgres ERD GUI while maintaining high code quality and comprehensive testing throughout the development process.
+
 
