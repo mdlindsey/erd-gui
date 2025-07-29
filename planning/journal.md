@@ -24,7 +24,6 @@ The most obvious functionality shown in the screenshots found in `/planning/imag
 - Ability to leave notes similar to sticky notes on tables etc that must be clicked to be expanded
 - Ability to drag/drop/move tables and have connector lines automatically and cleanly update
 - Ability to export to `.pgerd` format
-- Create user entities and manage table-level permissions
 - Create draggable/resizable colored boxes to indicate schema boundaries
 
 ### Table Creator/Editor Requirements
@@ -136,6 +135,108 @@ The app must support the `.pgerd` format as shown in `/planning/samples/design.p
 - **Documentation**: Provide clear API documentation for the `.pgerd` format
 - **Performance**: Optimize for large diagrams and smooth interactions
 
+## MVP Refinements
+
+July 28, 2025 @ 11:51pm
+
+### Scope Adjustments
+
+After careful consideration of development resources and timeline constraints, the following features have been **deferred from MVP** to post-MVP development:
+
+#### Deferred Features
+- **User Management**: User entities with table-level permissions (user boxes, permission lines)
+- **Schema Boxes**: Visual grouping boxes for schema organization
+- **Advanced Notes**: Rich text/markdown support in notes (MVP will use plain text only)
+
+#### Rationale
+- Single senior engineer working 40 hours/week
+- Focus on core table and relationship functionality first
+- Ensure high-quality, well-tested MVP before adding complexity
+- User management and schema boxes can be added as post-MVP features without breaking existing functionality
+
+### Updated MVP Scope
+
+The refined MVP scope now focuses on:
+
+#### Core Table Functionality
+- Create, edit, and delete tables
+- Support all default Postgres column types
+- Add/remove columns and constraints
+- Table positioning and resizing
+- Show/hide column types in table display
+
+#### Relationship Management
+- Create foreign key relationships (one-to-many)
+- Visual connector lines between tables
+- Edit relationship properties (cascade options, constraint names)
+- Delete relationships with confirmation
+- Custom routing of connector lines
+
+#### Canvas and Navigation
+- Zoom controls (25% to 400%)
+- Pan controls for canvas navigation
+- 15px grid system with snap-to-grid
+- Viewport state persistence
+
+#### Data Management
+- Import/Export `.pgerd` format (required for MVP)
+- Local storage auto-save
+- Data validation for relationships and references
+- Copy/paste JSON functionality
+
+#### Notes System
+- Simple plain text notes on tables
+- Collapsible/expandable notes
+- Add/remove notes functionality
+
+#### User Experience
+- Undo/redo functionality
+- Table selection and bulk operations
+- Drag and drop table positioning
+- Responsive design for desktop and tablet
+
+### Technical Requirements (Updated)
+
+#### Performance Standards
+- **Benchmark**: Handle 50+ tables without significant lag (< 100ms response time)
+- **Performance Testing**: Include automated performance benchmarks
+- **Optimization**: Implement virtualization and memoization strategies
+
+#### Testing Requirements
+- **Code Coverage**: 80% minimum coverage for unit and integration tests
+- **Test Types**: Unit tests for business logic, integration tests for user workflows
+- **Testing Framework**: Vitest + React Testing Library
+- **Performance Testing**: Automated benchmarks for large diagrams
+
+#### Browser Support
+- **Primary**: Chrome (first priority)
+- **Secondary**: Firefox, Safari, Edge (post-MVP)
+- **Mobile**: Tablet support required, mobile deferred
+
+#### Development Environment
+- **Team**: Single senior engineer (40 hours/week)
+- **Timeline**: Realistic 1-2 week milestones
+- **Quality**: Production-ready code with comprehensive testing
+
+### Future Versions (Updated Priority)
+
+#### Post-MVP Features (High Priority)
+1. **User Management**: User entities with table-level permissions
+2. **Schema Boxes**: Visual grouping for schema organization
+3. **Advanced Notes**: Rich text/markdown support
+
+#### Post-MVP Features (Medium Priority)
+4. **Advanced Relationships**: Many-to-many, inheritance
+5. **SQL Generation**: DDL and migration scripts
+6. **URL Sharing**: Encoded state sharing
+7. **Cross-browser Support**: Firefox, Safari, Edge
+
+#### Post-MVP Features (Lower Priority)
+8. **Real-time Collaboration**: Multi-user editing
+9. **Database Connections**: Direct import from existing databases
+10. **Terraform Generation**: Infrastructure as code
+11. **User-facing Configuration UI**: Visual theme customization
+
 ## Technical Design
 
 July 28, 2025 @ 11:30pm
@@ -180,10 +281,11 @@ The application follows a layered architecture with clear separation of concerns
 **Core Framework**: React 18+ with TypeScript
 - **State Management**: Redux Toolkit with abstracted service layer
 - **UI Components**: Radix UI primitives with custom styling
-- **Diagram Library**: React Flow (supports all requirements without blockers)
+- **Diagram Library**: React Flow (chosen for performance, feature completeness, and React integration)
 - **Styling**: CSS Modules + CSS Custom Properties for theming
 - **Build Tool**: Vite (fast development, optimized builds)
-- **Testing**: Vitest + React Testing Library
+- **Testing**: Vitest + React Testing Library (80% coverage requirement)
+- **Performance Testing**: React DevTools Profiler + custom benchmarks
 - **Linting**: ESLint + Prettier
 
 ### Key Design Decisions
@@ -217,15 +319,15 @@ src/
 │   ├── canvas/           # Diagram canvas components
 │   ├── tables/           # Table-related components
 │   ├── relationships/    # Connection line components
-│   ├── users/           # User entity components
-│   ├── schema-boxes/    # Visual grouping components
+│   ├── notes/           # Notes system components
 │   ├── ui/              # Reusable UI components (Radix-based)
 │   └── panels/          # Sidebar panels and modals
 ├── services/            # Business logic and external integrations
 ├── store/              # State management (abstracted)
 ├── types/              # TypeScript type definitions
 ├── utils/              # Utility functions
-└── hooks/              # Custom React hooks
+├── hooks/              # Custom React hooks
+└── tests/              # Test files and utilities
 ```
 
 ### Core Data Models
@@ -251,6 +353,13 @@ interface Column {
   defaultValue?: string;
   constraints: ColumnConstraint[];
 }
+
+interface Note {
+  id: string;
+  content: string; // Plain text for MVP
+  position: { x: number; y: number };
+  isExpanded: boolean;
+}
 ```
 
 #### Relationship Model
@@ -267,27 +376,11 @@ interface Relationship {
 }
 ```
 
-#### User Entity Model
-```typescript
-interface UserEntity {
-  id: string;
-  name: string;
-  position: { x: number; y: number };
-  permissions: Permission[];
-  color: string;
-}
-
-interface Permission {
-  tableId: string;
-  access: 'read' | 'write' | 'both';
-}
-```
-
 ### Canvas Implementation
 
 #### React Flow Integration
-- **Custom Node Types**: Table, User, SchemaBox components
-- **Custom Edge Types**: Relationship, Permission lines
+- **Custom Node Types**: Table components
+- **Custom Edge Types**: Relationship lines
 - **Custom Controls**: Zoom, pan, grid controls
 - **Performance**: React Flow's built-in virtualization and optimization
 
@@ -309,8 +402,7 @@ interface AppState {
   canvas: CanvasState;
   tables: TablesState;
   relationships: RelationshipsState;
-  users: UsersState;
-  schemaBoxes: SchemaBoxesState;
+  notes: NotesState;
   ui: UIState;
   undo: UndoState;
 }
@@ -390,8 +482,8 @@ function validateState(state: AppState): ValidationResult {
   --table-bg-color: #ffffff;
   --table-border-color: #e2e8f0;
   --relationship-line-color: #64748b;
-  --user-entity-color: #f59e0b;
-  --schema-box-color: #3b82f6;
+  --note-bg-color: #fef3c7;
+  --note-border-color: #f59e0b;
 }
 ```
 
@@ -427,21 +519,30 @@ class CommandManager {
 
 ### Testing Strategy
 
-#### Unit Tests
+#### Unit Tests (Required for MVP)
 - Business logic services
 - State management actions/reducers
 - Utility functions
 - Data validation
+- **Coverage Target**: 80% minimum
 
-#### Integration Tests
-- File import/export
+#### Integration Tests (Required for MVP)
+- File import/export workflows
 - Canvas interactions
 - Undo/redo functionality
+- Table creation and editing workflows
 
-#### Component Tests
+#### Component Tests (Required for MVP)
 - Table components
 - Relationship components
-- User interface components
+- Notes components
+- UI interface components
+
+#### Performance Tests (Required for MVP)
+- Large diagram rendering (50+ tables)
+- Relationship routing performance
+- Memory usage benchmarks
+- Interaction response times
 
 ### Development Workflow
 
@@ -456,6 +557,12 @@ class CommandManager {
 - **Code Splitting**: Lazy load non-critical components
 - **Tree Shaking**: Remove unused code
 - **Bundle Analysis**: Monitor bundle size
+
+#### Quality Assurance
+- **Code Coverage**: 80% minimum enforced by CI/CD
+- **Performance Benchmarks**: Automated testing for large diagrams
+- **Linting**: ESLint + Prettier with strict rules
+- **Type Checking**: Strict TypeScript configuration
 
 ### Future Considerations
 
