@@ -1387,6 +1387,23 @@ This planning document is a living document that should remain succinct yet comp
 
 This project follows a structured PR workflow to maintain code quality, enable proper review, and ensure clean git history. Each task from the prioritized backlog should be implemented as a separate PR.
 
+#### Task Completion Process
+
+When being asked to complete a task from the backlog, follow this exact process:
+
+1. **Read the entire journal.md file** to understand full context on vision, product requirements, technical design, etc.
+2. **Find the next task** that needs to be completed from the prioritized backlog
+3. **Re-read the contribution guidelines** and existing codebase to ensure you are following best practices
+4. **Complete the task** and verify quality with testing
+5. **Push your work** to an appropriately (short) named branch
+6. **Inform the human operator** that the branch is ready for review and provide them with a URL using this format so they can easily create a PR themselves:
+   ```
+   https://github.com/mdlindsey/erd-gui/compare/main...[branch-name]
+   ```
+   Replace `[branch-name]` with the actual name of the branch you created.
+
+**IMPORTANT**: Do NOT merge PRs automatically. Always stop after step 6 and wait for explicit human approval before merging.
+
 **Branch Workflow:**
 - **Branch Creation**: Create a new branch for each task using the naming convention specified in the backlog (e.g., `types/core-interfaces`, `store/redux-setup`)
 - **Development**: Implement the complete task requirements on the feature branch
@@ -1403,8 +1420,9 @@ This project follows a structured PR workflow to maintain code quality, enable p
 - **Review Required**: ALL PRs must be explicitly approved before merging
 - **No Auto-Merge**: Automatic merging is prohibited - only manual human review and authorization
 
-**Merge Process:**
+**Merge Process (Human-Controlled):**
 - **Manual Review**: Every PR requires human review and explicit approval
+- **Explicit Authorization**: Merge only occurs after human operator explicitly approves
 - **Merge Method**: Use `--no-ff` merges to preserve PR history and branch context
 - **Merge Message**: Include task details and implementation summary in merge commit
 - **Branch Cleanup**: Delete feature branches immediately after successful merge (both local and remote)
@@ -1421,12 +1439,13 @@ git checkout -b types/core-interfaces
 git commit -m "Task 2.1: Define Core TypeScript Interfaces
 - Created comprehensive type definitions..."
 
-# 4. Push branch for PR creation
+# 4. Push branch for review
 git push origin types/core-interfaces
 
-# 5. Create PR through GitHub/GitLab interface
-# 6. Wait for human review and approval
-# 7. After approval, merge with no-ff
+# 5. Inform human operator with PR creation URL:
+# "Branch ready for review: https://github.com/mdlindsey/erd-gui/compare/main...types/core-interfaces"
+# 6. STOP - Wait for explicit human approval
+# 7. Only after explicit authorization, merge with no-ff
 git checkout main
 git merge types/core-interfaces --no-ff -m "Merge Task 2.1: ..."
 
@@ -1448,11 +1467,19 @@ git push origin --delete types/core-interfaces
 - Regularly review and prune stale branches
 - Use descriptive branch names that match task identifiers
 
+**Critical Process Notes:**
+- **Never assume approval**: Always wait for explicit human authorization before merging
+- **Communication is key**: Always inform the human operator when branch is ready with PR creation URL
+- **Stop at branch push**: The workflow stops after pushing the branch and providing the PR creation URL
+- **Human creates PR**: The human operator creates the actual PR through the GitHub interface
+- **Patience is required**: Do not proceed with merge until explicitly told to do so
+
 This workflow ensures:
 - **Traceable History**: Each task has a clear PR trail
 - **Quality Control**: Human review catches issues before merge
 - **Clean Repository**: Regular cleanup prevents branch proliferation
 - **Collaboration**: Clear process enables multiple contributors
 - **Rollback Capability**: No-ff merges preserve branch context for easy rollbacks
+- **Human Oversight**: All merges are human-controlled and authorized
 
 
