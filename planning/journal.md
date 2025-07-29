@@ -845,4 +845,315 @@ Upon successful completion of MVP milestones, the following features will be pri
 
 This milestone plan ensures steady progress toward a complete, production-ready Postgres ERD GUI while maintaining high code quality and comprehensive testing throughout the development process.
 
+## Prioritized Backlog
+
+July 28, 2025 @ 11:58pm
+
+### Milestone 1: Project Foundation & Core Infrastructure
+
+This backlog provides detailed task breakdowns for each deliverable in Milestone 1. Tasks are written for junior to mid-level engineers with clear instructions, best practices, and acceptance criteria.
+
+#### Deliverable 1: Project Setup with Vite, React 18+, TypeScript
+
+**Task 1.1: Initialize Vite Project**
+- **Description**: Create new Vite project with React and TypeScript template
+- **Instructions**: 
+  - Run `npm create vite@latest pgerd-gui -- --template react-ts`
+  - Navigate to project directory: `cd pgerd-gui`
+  - Install dependencies: `npm install`
+  - Verify TypeScript configuration in `tsconfig.json` has strict mode enabled
+- **Acceptance Criteria**: Project builds successfully with `npm run build`
+- **Testing**: Run `npm run dev` and verify React app loads in browser
+- **Estimated Effort**: 30 minutes
+
+**Task 1.2: Configure TypeScript Strict Mode**
+- **Description**: Set up strict TypeScript configuration for type safety
+- **Instructions**:
+  - Update `tsconfig.json` to include: `"strict": true`, `"noImplicitAny": true`, `"strictNullChecks": true`
+  - Add `"skipLibCheck": true` to avoid third-party library type issues
+  - Configure `"baseUrl": "."` and `"paths"` for clean imports
+- **Acceptance Criteria**: No TypeScript errors in initial build
+- **Testing**: Run `npx tsc --noEmit` to verify type checking
+- **Estimated Effort**: 1 hour
+
+**Task 1.3: Install Core Dependencies**
+- **Description**: Install React Flow, Redux Toolkit, and other core dependencies
+- **Instructions**:
+  - Install React Flow: `npm install reactflow`
+  - Install Redux Toolkit: `npm install @reduxjs/toolkit react-redux`
+  - Install Radix UI primitives: `npm install @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-button`
+  - Install utility libraries: `npm install lodash-es` (for debouncing)
+- **Acceptance Criteria**: All packages install without conflicts
+- **Testing**: Verify imports work in a test component
+- **Estimated Effort**: 30 minutes
+
+#### Deliverable 2: Redux Toolkit Store with Abstracted Service Layer
+
+**Task 2.1: Define Core TypeScript Interfaces**
+- **Description**: Create type definitions for application state
+- **Instructions**:
+  - Create `src/types/index.ts` with core interfaces (AppState, CanvasState, Table, etc.)
+  - Define abstract StateService interface as shown in technical design
+  - Create separate type files for each domain (tables, relationships, notes)
+- **Best Practices**: Use strict typing, avoid `any`, use union types for enums
+- **Acceptance Criteria**: All interfaces compile without errors
+- **Testing**: Create simple test to verify type compatibility
+- **Estimated Effort**: 2 hours
+
+**Task 2.2: Implement Redux Store Structure**
+- **Description**: Set up Redux Toolkit store with proper slice organization
+- **Instructions**:
+  - Create `src/store/index.ts` with configureStore
+  - Create separate slices: `canvasSlice.ts`, `tablesSlice.ts`, `relationshipsSlice.ts`
+  - Implement initial state for each slice
+  - Set up proper TypeScript typing for store and slices
+- **Best Practices**: Use createSlice, avoid mutating state, use immer for updates
+- **Acceptance Criteria**: Store initializes without errors, all slices accessible
+- **Testing**: Write unit tests for each slice reducer
+- **Estimated Effort**: 3 hours
+
+**Task 2.3: Create Abstracted Service Layer**
+- **Description**: Implement service layer that abstracts Redux implementation
+- **Instructions**:
+  - Create `src/services/StateService.ts` implementing the abstract interface
+  - Create concrete `ReduxStateService` class
+  - Implement service methods that dispatch Redux actions
+  - Create service factory/context for dependency injection
+- **Best Practices**: Use dependency injection, make services testable, handle async operations
+- **Acceptance Criteria**: Services can be injected and used by components
+- **Testing**: Write unit tests for service methods
+- **Estimated Effort**: 4 hours
+
+#### Deliverable 3: React Flow Canvas Integration with Basic Zoom/Pan
+
+**Task 3.1: Set Up React Flow Canvas**
+- **Description**: Create basic React Flow canvas with proper configuration
+- **Instructions**:
+  - Create `src/components/canvas/Canvas.tsx` component
+  - Configure ReactFlow with proper nodeTypes and edgeTypes
+  - Set up viewport state management
+  - Implement basic zoom and pan controls
+- **Best Practices**: Use React.memo for performance, handle viewport changes properly
+- **Acceptance Criteria**: Canvas renders with zoom controls (25% to 400%)
+- **Testing**: Test zoom/pan functionality with user interactions
+- **Estimated Effort**: 3 hours
+
+**Task 3.2: Implement Custom Controls**
+- **Description**: Create custom zoom and pan controls
+- **Instructions**:
+  - Create `src/components/canvas/CanvasControls.tsx`
+  - Implement zoom in/out buttons with proper limits
+  - Add fit-to-view functionality
+  - Style controls to match design system
+- **Best Practices**: Use CSS custom properties for theming, make controls accessible
+- **Acceptance Criteria**: All zoom controls work within specified range
+- **Testing**: Test all control interactions and edge cases
+- **Estimated Effort**: 2 hours
+
+**Task 3.3: Integrate Canvas with State Management**
+- **Description**: Connect canvas to Redux store for state persistence
+- **Instructions**:
+  - Connect canvas component to Redux store using useSelector and useDispatch
+  - Implement viewport state synchronization
+  - Handle canvas events and dispatch appropriate actions
+  - Ensure smooth performance with large numbers of elements
+- **Best Practices**: Use useCallback for event handlers, debounce expensive operations
+- **Acceptance Criteria**: Canvas state persists and restores correctly
+- **Testing**: Test state persistence and restoration
+- **Estimated Effort**: 2 hours
+
+#### Deliverable 4: 15px Grid System with Snap-to-Grid Functionality
+
+**Task 4.1: Implement Grid Rendering**
+- **Description**: Create visual grid system on canvas
+- **Instructions**:
+  - Create `src/components/canvas/Grid.tsx` component
+  - Implement 15px grid rendering with CSS
+  - Make grid responsive to zoom level
+  - Add grid toggle functionality
+- **Best Practices**: Use CSS transforms for performance, make grid subtle but visible
+- **Acceptance Criteria**: Grid is visible and scales with zoom
+- **Testing**: Test grid visibility at different zoom levels
+- **Estimated Effort**: 2 hours
+
+**Task 4.2: Implement Snap-to-Grid Logic**
+- **Description**: Create utility functions for snapping coordinates to grid
+- **Instructions**:
+  - Create `src/utils/grid.ts` with snapToGrid function
+  - Implement snap threshold logic (5px)
+  - Create helper functions for grid calculations
+  - Add grid size constants
+- **Best Practices**: Use pure functions, handle edge cases, make functions testable
+- **Acceptance Criteria**: Coordinates snap correctly to 15px grid
+- **Testing**: Write comprehensive unit tests for grid utilities
+- **Estimated Effort**: 1.5 hours
+
+**Task 4.3: Integrate Grid with Canvas Interactions**
+- **Description**: Apply snap-to-grid to all canvas interactions
+- **Instructions**:
+  - Modify canvas event handlers to use snapToGrid
+  - Apply snapping to node positioning
+  - Add visual feedback when snapping occurs
+  - Make snap-to-grid toggleable
+- **Best Practices**: Provide visual feedback, make snapping optional, handle performance
+- **Acceptance Criteria**: All canvas interactions respect grid snapping
+- **Testing**: Test snapping behavior with various interactions
+- **Estimated Effort**: 2 hours
+
+#### Deliverable 5: Basic Project Structure and Component Architecture
+
+**Task 5.1: Create Component Directory Structure**
+- **Description**: Set up organized component architecture
+- **Instructions**:
+  - Create directory structure: `src/components/{canvas,tables,relationships,notes,ui,panels}`
+  - Create index files for clean imports
+  - Set up barrel exports for each component category
+  - Create placeholder components for each major feature
+- **Best Practices**: Use consistent naming, organize by feature, use barrel exports
+- **Acceptance Criteria**: Clean import structure, no circular dependencies
+- **Testing**: Verify all imports work correctly
+- **Estimated Effort**: 1 hour
+
+**Task 5.2: Create Base UI Components**
+- **Description**: Implement reusable UI components using Radix UI
+- **Instructions**:
+  - Create `src/components/ui/Button.tsx`, `Modal.tsx`, `Input.tsx`
+  - Implement consistent styling with CSS custom properties
+  - Add proper TypeScript props interfaces
+  - Include accessibility attributes
+- **Best Practices**: Use Radix UI primitives, implement proper accessibility, use consistent styling
+- **Acceptance Criteria**: All UI components render correctly and are accessible
+- **Testing**: Test component rendering and accessibility
+- **Estimated Effort**: 3 hours
+
+**Task 5.3: Set Up CSS Architecture**
+- **Description**: Implement CSS Modules with custom properties for theming
+- **Instructions**:
+  - Create `src/styles/` directory with global styles
+  - Set up CSS custom properties for theming
+  - Create component-specific CSS modules
+  - Implement responsive design utilities
+- **Best Practices**: Use CSS custom properties, implement mobile-first design, use semantic class names
+- **Acceptance Criteria**: Consistent styling across components, responsive design works
+- **Testing**: Test styling across different screen sizes
+- **Estimated Effort**: 2 hours
+
+#### Deliverable 6: ESLint + Prettier Configuration
+
+**Task 6.1: Install and Configure ESLint**
+- **Description**: Set up ESLint with React and TypeScript rules
+- **Instructions**:
+  - Install ESLint: `npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks`
+  - Create `.eslintrc.js` with strict rules for React and TypeScript
+  - Configure rules for code quality and consistency
+  - Add scripts to package.json for linting
+- **Best Practices**: Use strict rules, enable React hooks rules, configure for TypeScript
+- **Acceptance Criteria**: ESLint runs without errors on existing code
+- **Testing**: Run `npm run lint` and verify no errors
+- **Estimated Effort**: 1 hour
+
+**Task 6.2: Install and Configure Prettier**
+- **Description**: Set up Prettier for consistent code formatting
+- **Instructions**:
+  - Install Prettier: `npm install -D prettier eslint-config-prettier eslint-plugin-prettier`
+  - Create `.prettierrc` with consistent formatting rules
+  - Configure ESLint to work with Prettier
+  - Add format scripts to package.json
+- **Best Practices**: Use consistent formatting rules, integrate with ESLint, configure for team use
+- **Acceptance Criteria**: Prettier formats code consistently
+- **Testing**: Run `npm run format` and verify formatting
+- **Estimated Effort**: 30 minutes
+
+**Task 6.3: Set Up Pre-commit Hooks**
+- **Description**: Configure Git hooks for code quality
+- **Instructions**:
+  - Install husky: `npm install -D husky lint-staged`
+  - Configure pre-commit hook to run linting and formatting
+  - Set up lint-staged to only process changed files
+  - Add scripts to package.json for hook management
+- **Best Practices**: Use lint-staged for performance, fail commits on lint errors
+- **Acceptance Criteria**: Pre-commit hooks run automatically
+- **Testing**: Make a commit and verify hooks run
+- **Estimated Effort**: 1 hour
+
+#### Deliverable 7: Vitest + React Testing Library Setup with 80% Coverage Enforcement
+
+**Task 7.1: Install and Configure Vitest**
+- **Description**: Set up Vitest testing framework
+- **Instructions**:
+  - Install Vitest: `npm install -D vitest @vitest/ui jsdom`
+  - Configure `vite.config.ts` for testing
+  - Set up test environment with jsdom
+  - Create test utilities and helpers
+- **Best Practices**: Use jsdom for DOM testing, configure for React components
+- **Acceptance Criteria**: Vitest runs tests successfully
+- **Testing**: Run `npm run test` and verify execution
+- **Estimated Effort**: 1 hour
+
+**Task 7.2: Install and Configure React Testing Library**
+- **Description**: Set up React Testing Library for component testing
+- **Instructions**:
+  - Install React Testing Library: `npm install -D @testing-library/react @testing-library/jest-dom @testing-library/user-event`
+  - Configure testing utilities and custom render function
+  - Set up test providers (Redux, Router, etc.)
+  - Create common test utilities
+- **Best Practices**: Use user-centric testing, avoid testing implementation details
+- **Acceptance Criteria**: Can render and test React components
+- **Testing**: Write simple component test and verify it passes
+- **Estimated Effort**: 1.5 hours
+
+**Task 7.3: Configure Coverage Reporting**
+- **Description**: Set up code coverage with 80% enforcement
+- **Instructions**:
+  - Configure Vitest coverage settings in `vite.config.ts`
+  - Set up coverage thresholds (80% minimum)
+  - Configure coverage reporting format
+  - Add coverage scripts to package.json
+- **Best Practices**: Use realistic thresholds, exclude test files, configure for CI/CD
+- **Acceptance Criteria**: Coverage reports generate correctly
+- **Testing**: Run `npm run test:coverage` and verify reporting
+- **Estimated Effort**: 1 hour
+
+**Task 7.4: Create Initial Test Suite**
+- **Description**: Write comprehensive tests for existing components
+- **Instructions**:
+  - Write unit tests for utility functions
+  - Write component tests for UI components
+  - Write integration tests for canvas functionality
+  - Ensure 80% coverage is achieved
+- **Best Practices**: Test user interactions, test edge cases, use meaningful test descriptions
+- **Acceptance Criteria**: 80% code coverage achieved
+- **Testing**: Run full test suite and verify coverage
+- **Estimated Effort**: 4 hours
+
+### Task Dependencies and Prerequisites
+
+**Critical Path**:
+1. Task 1.1 → Task 1.2 → Task 1.3 (Project Setup)
+2. Task 2.1 → Task 2.2 → Task 2.3 (State Management)
+3. Task 3.1 → Task 3.2 → Task 3.3 (Canvas Integration)
+4. Task 4.1 → Task 4.2 → Task 4.3 (Grid System)
+5. Task 5.1 → Task 5.2 → Task 5.3 (Component Architecture)
+6. Task 6.1 → Task 6.2 → Task 6.3 (Code Quality)
+7. Task 7.1 → Task 7.2 → Task 7.3 → Task 7.4 (Testing)
+
+**Parallel Tasks**: Tasks 5.1-5.3 can run in parallel with Tasks 6.1-6.3
+
+### Success Criteria for Milestone 1
+
+- **Functional**: Canvas renders with zoom controls (25% to 400%), pan functionality works smoothly
+- **Technical**: Grid system visible and snap-to-grid functional, project builds without errors
+- **Quality**: Test suite runs with 80% coverage, code quality tools properly configured
+- **Architecture**: Clean architecture patterns established, proper TypeScript configuration
+- **Foundation**: Abstracted state management implemented, reusable UI component foundation created
+
+### Risk Mitigation
+
+- **React Flow Complexity**: Start with basic canvas setup before advanced features
+- **TypeScript Configuration**: Use strict mode from the beginning to avoid technical debt
+- **Testing Setup**: Establish testing patterns early to ensure consistent coverage
+- **Performance**: Monitor bundle size and performance from the start
+
+This detailed backlog ensures that junior to mid-level engineers have clear, actionable tasks with proper guidance on best practices and implementation details.
+
 
