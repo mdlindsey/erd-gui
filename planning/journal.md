@@ -91,14 +91,124 @@ The table creator/editor must be capable of:
 
 ### Technical Requirements
 
-- **Performance**: Handle diagrams with 50+ tables without significant lag
+- **Performance**: Handle diagrams with 50+ tables without significant lag (< 100ms response time)
 - **Responsive Design**: Work well on desktop (primary) and tablet screens
-- **Browser Compatibility**: Support modern browsers (Chrome, Firefox, Safari, Edge)
+- **Browser Compatibility**: 
+  - **Primary Support (MVP)**: Chrome 90+, Edge 90+ (primary development and testing target)
+  - **Secondary Support (Post-MVP)**: Firefox 88+, Safari 14+ (functional with acceptable performance)
+  - **Feature Detection**: Progressive enhancement with graceful degradation for unsupported features
 - **Accessibility**: Basic keyboard navigation and screen reader support
+- **Bundle Size**: < 500KB gzipped total bundle size
 
 ### Data Format Specification
 
 The app must support the `.pgerd` format as shown in `/planning/samples/design.pgerd.formatted.json`:
+
+#### Complete File Format Definition
+
+The `.pgerd` format is a versioned JSON structure that stores complete diagram state:
+
+```json
+{
+  "version": "1.0.0",
+  "metadata": {
+    "created": "2025-01-01T00:00:00Z",
+    "modified": "2025-01-01T00:00:00Z",
+    "title": "Database Design",
+    "description": "Optional description"
+  },
+  "canvas": {
+    "zoom": 1.0,
+    "offset": { "x": 0, "y": 0 },
+    "gridEnabled": true,
+    "gridSize": 15,
+    "snapToGrid": true
+  },
+  "tables": {
+    "table_id_1": {
+      "id": "table_id_1",
+      "name": "users",
+      "schema": "public",
+      "position": { "x": 100, "y": 100 },
+      "size": { "width": 200, "height": 150 },
+      "columns": [
+        {
+          "id": "col_1",
+          "name": "id",
+          "type": "SERIAL",
+          "isPrimaryKey": true,
+          "isNullable": false,
+          "defaultValue": null,
+          "constraints": ["PRIMARY KEY"],
+          "comment": null
+        }
+      ],
+      "constraints": [
+        {
+          "id": "constraint_1",
+          "type": "PRIMARY_KEY",
+          "name": "users_pkey",
+          "columns": ["id"]
+        }
+      ],
+      "notes": [
+        {
+          "id": "note_1",
+          "content": "Main user table",
+          "position": { "x": 10, "y": 10 },
+          "isExpanded": false,
+          "color": "#fef3c7"
+        }
+      ]
+    }
+  },
+  "relationships": {
+    "rel_1": {
+      "id": "rel_1",
+      "type": "one_to_many",
+      "sourceTable": "table_id_1",
+      "sourceColumn": "id",
+      "targetTable": "table_id_2",
+      "targetColumn": "user_id",
+      "constraintName": "fk_user_posts",
+      "cascadeOptions": {
+        "onDelete": "CASCADE",
+        "onUpdate": "RESTRICT"
+      },
+      "routingPoints": [
+        { "x": 300, "y": 125 },
+        { "x": 400, "y": 125 }
+      ],
+      "style": {
+        "lineType": "bezier",
+        "color": "#64748b",
+        "width": 2
+      }
+    }
+  }
+}
+```
+
+#### PostgreSQL Data Types Support
+
+**Complete list of supported PostgreSQL types for MVP:**
+
+**Numeric Types**: `SMALLINT`, `INTEGER`, `BIGINT`, `DECIMAL(p,s)`, `NUMERIC(p,s)`, `REAL`, `DOUBLE PRECISION`, `SMALLSERIAL`, `SERIAL`, `BIGSERIAL`
+
+**Character Types**: `CHARACTER(n)`, `CHAR(n)`, `CHARACTER VARYING(n)`, `VARCHAR(n)`, `TEXT`
+
+**Date/Time Types**: `TIMESTAMP`, `TIMESTAMP WITH TIME ZONE`, `DATE`, `TIME`, `TIME WITH TIME ZONE`, `INTERVAL`
+
+**Other Types**: `BOOLEAN`, `BYTEA`, `JSON`, `JSONB`, `UUID`
+
+#### Data Validation Rules
+
+**Table Validation**: Table names must be valid PostgreSQL identifiers (1-63 chars, alphanumeric + underscore), schema names must be valid PostgreSQL identifiers, at least one column required per table, primary key constraints must reference existing columns.
+
+**Column Validation**: Column names must be unique within table and be valid PostgreSQL identifiers, data types must be from supported list, primary key columns cannot be nullable, default values must be compatible with column type.
+
+**Relationship Validation**: Source and target tables must exist, source and target columns must exist and be compatible types, cannot create circular foreign key dependencies, cascade options must be valid PostgreSQL values: CASCADE, RESTRICT, SET NULL, SET DEFAULT, NO ACTION.
+
 - **Version**: Include version field for future compatibility
 - **Canvas State**: Store zoom, offset, and grid settings
 - **Tables**: Store table position, schema, columns, constraints, and metadata
@@ -269,48 +379,53 @@ The application follows a layered architecture with clear separation of concerns
 └─────────────────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────────────────┐
 │                      Data Layer                             │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
-│  │   Local     │ │   Import/   │ │   Export    │ │   Validation│          │
-│  │  Storage    │ │   Services  │ │   Services  │          │
-│  └─────────────┘ └─────────────┘ └─────────────┘          │
-└─────────────────────────────────────────────────────────────┘
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Local     │ │   Import/   │ │   Export    │ │ Validation  │ │
+│  │  Storage    │ │   Services  │ │   Services  │ │  Services   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────┐
 ```
 
 ### Technology Stack
 
 **Core Framework**: React 18+ with TypeScript
-- **State Management**: Redux Toolkit with abstracted service layer
+- **State Management**: Zustand (simpler than Redux for client-side app)
 - **UI Components**: Radix UI primitives with custom styling
-- **Diagram Library**: React Flow (chosen for performance, feature completeness, and React integration)
+- **Diagram Library**: React Flow (with custom virtualization layer)
 - **Styling**: CSS Modules + CSS Custom Properties for theming
 - **Build Tool**: Vite (fast development, optimized builds)
 - **Testing**: Vitest + React Testing Library (80% coverage requirement)
-- **Performance Testing**: React DevTools Profiler + custom benchmarks
-- **Linting**: ESLint + Prettier
+- **Performance Testing**: React DevTools Profiler + Playwright + custom benchmarks
+- **Cross-Browser Testing**: Playwright with automated browser matrix
+- **Linting**: ESLint + Prettier + TypeScript strict mode
+- **Bundle Analysis**: @vite/plugin-bundle-analyzer
 
 ### Key Design Decisions
 
-#### 1. State Management Abstraction
+#### 1. State Management Architecture
 ```typescript
-// Abstracted service layer for easy state management switching
-interface StateService {
-  getState(): AppState;
-  dispatch(action: AppAction): void;
-  subscribe(listener: (state: AppState) => void): () => void;
+// Simplified Zustand store for client-side app
+import { create } from 'zustand';
+
+interface AppState {
+  canvas: { zoom: number; offset: Point; gridEnabled: boolean; selectedElements: string[] };
+  tables: Record<string, Table>;
+  relationships: Record<string, Relationship>;
+  ui: { activePanel: string | null; isLoading: boolean; errors: string[] };
+  history: { past: AppState[]; future: AppState[] };
 }
 
-// Redux implementation (can be swapped)
-class ReduxStateService implements StateService {
-  // Implementation details hidden from components
-}
+const useAppStore = create<AppState>()((set, get) => ({
+  // State and actions implementation
+}));
 ```
 
 #### 2. Performance Optimizations
-- **Virtualization**: Only render visible tables and relationships
-- **Canvas Rendering**: Use React Flow's optimized canvas for large diagrams
+- **Virtualization**: Only render visible tables and relationships using custom viewport calculations
+- **Canvas Rendering**: Use React Flow's optimized canvas with custom virtualization layer
 - **Debounced Updates**: Throttle expensive operations (auto-save, relationship updates)
 - **Memoization**: React.memo for expensive components, useMemo for derived state
-- **Web Workers**: Offload heavy computations (relationship validation, layout algorithms)
+- **Bundle Optimization**: Aggressive code splitting and tree shaking (target: < 500KB gzipped)
 
 #### 3. Component Architecture
 ```
@@ -339,6 +454,7 @@ interface Table {
   name: string;
   schema: string;
   position: { x: number; y: number };
+  size: { width: number; height: number };
   columns: Column[];
   constraints: Constraint[];
   notes: Note[];
@@ -347,11 +463,12 @@ interface Table {
 
 interface Column {
   name: string;
-  type: PostgresType;
+  type: PostgresType; // From supported types list above
   isPrimaryKey: boolean;
   isNullable: boolean;
   defaultValue?: string;
   constraints: ColumnConstraint[];
+  comment?: string;
 }
 
 interface Note {
@@ -366,13 +483,18 @@ interface Note {
 ```typescript
 interface Relationship {
   id: string;
-  type: 'onetomany' | 'manytoone' | 'onetoone' | 'manytomany';
+  type: 'one_to_many' | 'many_to_one' | 'one_to_one' | 'many_to_many';
   sourceTable: string;
   sourceColumn: string;
   targetTable: string;
   targetColumn: string;
-  cascadeOptions: CascadeOptions;
-  points: Point[]; // For custom routing
+  constraintName: string;
+  cascadeOptions: {
+    onDelete: 'CASCADE' | 'RESTRICT' | 'SET NULL' | 'SET DEFAULT' | 'NO ACTION';
+    onUpdate: 'CASCADE' | 'RESTRICT' | 'SET NULL' | 'SET DEFAULT' | 'NO ACTION';
+  };
+  routingPoints: Point[]; // For custom routing (max 3 points for performance)
+  style: { lineType: string; color: string; width: number };
 }
 ```
 
@@ -386,13 +508,21 @@ interface Relationship {
 
 #### Grid System
 ```typescript
-const GRID_SIZE = 15;
-const SNAP_THRESHOLD = 5;
+const GRID_CONFIG = {
+  size: 15, // px
+  snapThreshold: 7, // px - half grid size for intuitive snapping
+  strongSnapDistance: 3, // px - closer than this always snaps
+  visualFeedbackThreshold: 10 // px - show snap guides when within this distance
+};
 
 function snapToGrid(value: number): number {
-  return Math.round(value / GRID_SIZE) * GRID_SIZE;
+  const remainder = value % GRID_CONFIG.size;
+  const halfGrid = GRID_CONFIG.size / 2;
+  return remainder < halfGrid ? value - remainder : value + (GRID_CONFIG.size - remainder);
 }
 ```
+
+**Grid Snap Behavior**: Snap threshold of 7px for intuitive behavior, visual feedback with snap guides when dragging near grid lines, toggle preserves current element positions, keyboard shortcuts: `G` to toggle grid, `Shift+G` to toggle snapping.
 
 ### State Management Structure
 
@@ -428,25 +558,53 @@ class TableService {
 
 ### Performance Strategies
 
-#### 1. Rendering Optimization
-- **React.memo**: All table and relationship components
-- **useCallback**: Event handlers to prevent unnecessary re-renders
-- **useMemo**: Expensive calculations (relationship routing, layout)
-
-#### 2. Virtualization
+#### 1. React Flow Optimization
 ```typescript
-// Only render visible elements
-const visibleTables = useMemo(() => {
-  return tables.filter(table => isInViewport(table.position, viewport));
-}, [tables, viewport]);
+// Custom virtualization for React Flow
+const VIEWPORT_BUFFER = 200; // px buffer around visible area
+
+const useVirtualizedNodes = (tables: Table[], viewport: Viewport) => {
+  return useMemo(() => {
+    const visibleBounds = {
+      minX: viewport.x - VIEWPORT_BUFFER,
+      maxX: viewport.x + viewport.width + VIEWPORT_BUFFER,
+      minY: viewport.y - VIEWPORT_BUFFER,
+      maxY: viewport.y + viewport.height + VIEWPORT_BUFFER
+    };
+    
+    return tables.filter(table => 
+      isRectIntersecting(table.position, table.size, visibleBounds)
+    );
+  }, [tables, viewport]);
+};
 ```
 
-#### 3. Debounced Operations
+#### 2. Relationship Routing Performance
+- **Pathfinding Algorithm**: Use A* algorithm for complex routing with obstacles
+- **Caching**: Cache routing calculations with memoization, debounce routing updates during table movement
+- **Constraints**: Maximum 3 routing points per relationship for performance
+
+#### 3. Memory Management
 ```typescript
-const debouncedAutoSave = useMemo(
-  () => debounce(saveToLocalStorage, 1000),
-  []
-);
+// Lazy loading of table content for performance
+const TableNode = React.memo(({ id, isVisible }: TableNodeProps) => {
+  const tableData = useSelector(state => state.tables[id]);
+  
+  if (!isVisible) {
+    return <TablePlaceholder position={tableData.position} />;
+  }
+  
+  return <FullTableComponent data={tableData} />;
+});
+```
+
+#### 4. Bundle Size Optimization
+**Target Metrics**: Initial bundle < 500KB gzipped, React Flow ~200KB, Application code < 250KB
+
+**Code Splitting Strategy**:
+```typescript
+const TableEditor = lazy(() => import('./components/tables/TableEditor'));
+const RelationshipEditor = lazy(() => import('./components/relationships/RelationshipEditor'));
 ```
 
 ### File Format Handling
@@ -823,15 +981,40 @@ This milestone plan is designed for a single senior engineer working 40 hours pe
 
 ### Risk Mitigation
 
-#### Technical Risks
-- **React Flow Complexity**: Allocate extra time for custom node/edge development
-- **Performance Issues**: Early performance testing and optimization
-- **State Management Complexity**: Use abstracted service layer for flexibility
+#### Technical Risks (High Impact)
+- **React Flow Limitations**: Risk of inadequate performance with 50+ tables
+  - *Mitigation*: Custom virtualization layer, fallback to HTML5 Canvas, prototype with 100+ tables in week 1
+  - *Contingency*: Switch to Konva.js + React-Konva if React Flow fails
 
-#### Timeline Risks
-- **Scope Creep**: Strict adherence to MVP scope
-- **Technical Debt**: Regular refactoring and code review
-- **Testing Overhead**: Automated testing from day one
+- **Browser Compatibility**: CSS Grid and modern JS features may not work in older browsers
+  - *Mitigation*: Define minimum browser versions (Chrome 90+, Firefox 88+, Safari 14+), feature detection with graceful degradation
+  - *Testing*: Automated cross-browser testing with Playwright
+
+- **Bundle Size Explosion**: React Flow + dependencies may exceed 500KB budget
+  - *Mitigation*: Monitor bundle size in CI/CD, aggressive code splitting, hard limit enforcement
+  - *Fallback*: Create lightweight custom canvas solution
+
+#### Development Risks (Medium Impact)
+- **State Management Complexity**: Complex state updates introducing bugs
+  - *Mitigation*: Use Zustand for simpler state management, comprehensive unit tests, state debugger for development
+
+- **Performance Testing Gaps**: Performance issues discovered late
+  - *Mitigation*: Performance tests from milestone 1, continuous React DevTools Profiler usage, automated regression testing
+
+#### Timeline Risks (Medium Impact)
+- **React Flow Learning Curve**: Custom nodes/edges more complex than anticipated
+  - *Mitigation*: 25% time buffer for canvas implementation, proof of concept in first week, HTML5 Canvas backup plan
+
+- **Testing Overhead**: 80% coverage requirement slowing development
+  - *Mitigation*: TDD for complex logic, testing utilities early, write tests alongside code
+
+#### Business Risks (Low Impact)
+- **Scope Creep**: Stakeholders requesting features beyond MVP
+  - *Mitigation*: Document clear MVP boundaries, post-MVP roadmap, time-boxed feature exploration
+
+#### Risk Monitoring
+**Weekly Assessment**: Performance benchmarks, bundle size growth, test coverage metrics, development velocity
+**Go/No-Go Criteria**: Milestone 1 (25 tables smooth), Milestone 3 (intuitive relationships), Milestone 6 (50 tables < 100ms)
 
 ### Post-MVP Planning
 
@@ -1155,5 +1338,27 @@ This backlog provides detailed task breakdowns for each deliverable in Milestone
 - **Performance**: Monitor bundle size and performance from the start
 
 This detailed backlog ensures that junior to mid-level engineers have clear, actionable tasks with proper guidance on best practices and implementation details.
+
+## Contributing
+
+### Documentation Updates
+
+This planning document is a living document that should remain succinct yet comprehensive. When making updates:
+
+**PR Requirements:**
+- **Title**: Short description of what step was completed (e.g., "Enhance planning documentation based on architectural review")
+- **Description**: Summary of the conversation or analysis that led to the changes
+- **Branch**: Short and relevant name (e.g., `planning/review`, `architecture/updates`)
+
+**Content Guidelines:**
+- Update content in place while minimizing changes to preserve history
+- Preserve existing formatting to reduce noise in version diffs
+- Incorporate recommendations into existing sections rather than adding new major sections
+- Maintain the balance of being succinct yet comprehensive
+
+**Review Process:**
+- All architectural changes should be reviewed by a senior engineer
+- Performance implications should be considered for any technical modifications
+- Scope changes must be validated against MVP boundaries
 
 
