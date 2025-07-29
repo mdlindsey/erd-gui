@@ -1396,10 +1396,13 @@ When being asked to complete a task from the backlog, follow this exact process:
 3. **Re-read the contribution guidelines** and existing codebase to ensure you are following best practices
 4. **Complete the task** and verify quality with testing
 5. **Push your work** to an appropriately (short) named branch
-6. **Create a PR** of your branch against main
-7. **Inform the human operator** that the PR is ready for review
+6. **Inform the human operator** that the branch is ready for review and provide them with a URL using this format so they can easily create a PR themselves:
+   ```
+   https://github.com/mdlindsey/erd-gui/compare/main...[branch-name]
+   ```
+   Replace `[branch-name]` with the actual name of the branch you created.
 
-**IMPORTANT**: Do NOT merge PRs automatically. Always stop after step 7 and wait for explicit human approval before merging.
+**IMPORTANT**: Do NOT merge PRs automatically. Always stop after step 6 and wait for explicit human approval before merging.
 
 **Branch Workflow:**
 - **Branch Creation**: Create a new branch for each task using the naming convention specified in the backlog (e.g., `types/core-interfaces`, `store/redux-setup`)
@@ -1436,17 +1439,17 @@ git checkout -b types/core-interfaces
 git commit -m "Task 2.1: Define Core TypeScript Interfaces
 - Created comprehensive type definitions..."
 
-# 4. Push branch for PR creation
+# 4. Push branch for review
 git push origin types/core-interfaces
 
-# 5. Create PR through GitHub/GitLab interface
-# 6. Inform human operator: "PR ready for review"
-# 7. STOP - Wait for explicit human approval
-# 8. Only after explicit authorization, merge with no-ff
+# 5. Inform human operator with PR creation URL:
+# "Branch ready for review: https://github.com/mdlindsey/erd-gui/compare/main...types/core-interfaces"
+# 6. STOP - Wait for explicit human approval
+# 7. Only after explicit authorization, merge with no-ff
 git checkout main
 git merge types/core-interfaces --no-ff -m "Merge Task 2.1: ..."
 
-# 9. Clean up branches
+# 8. Clean up branches
 git branch -d types/core-interfaces
 git push origin --delete types/core-interfaces
 ```
@@ -1466,8 +1469,9 @@ git push origin --delete types/core-interfaces
 
 **Critical Process Notes:**
 - **Never assume approval**: Always wait for explicit human authorization before merging
-- **Communication is key**: Always inform the human operator when a PR is ready
-- **Stop at PR creation**: The workflow stops after creating the PR and informing the operator
+- **Communication is key**: Always inform the human operator when branch is ready with PR creation URL
+- **Stop at branch push**: The workflow stops after pushing the branch and providing the PR creation URL
+- **Human creates PR**: The human operator creates the actual PR through the GitHub interface
 - **Patience is required**: Do not proceed with merge until explicitly told to do so
 
 This workflow ensures:
