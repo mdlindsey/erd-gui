@@ -1368,7 +1368,7 @@ This detailed backlog ensures that junior to mid-level engineers have clear, act
 This planning document is a living document that should remain succinct yet comprehensive. When making updates:
 
 **PR Requirements:**
-- **Title**: Very short description (1-3 words ideally, e.g., "Plan review", "Architecture update", "Scope refinement")
+- **Title**: MUST be very short - 1-3 words maximum (e.g., "Plan review", "Architecture update", "Scope refinement", "Bug fix")
 - **Description**: Summary of the conversation or analysis that led to the changes
 - **Branch**: Short and relevant name (e.g., `planning/review`, `architecture/updates`)
 
