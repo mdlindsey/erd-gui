@@ -1,18 +1,12 @@
-// Services module exports
-
-// Core service classes and types
+// Export the main service classes
 export { ReduxStateService } from './StateService';
-export {
-  ServiceFactory,
-  createStateService,
-  initializeDefaultService,
-  type ServiceType,
-  type ServiceConfig,
-} from './ServiceFactory';
+export { ServiceFactory, createStateService } from './ServiceFactory';
 
-// React context and hooks
+// Export the context and provider
+export { ServiceProvider, ServiceContext } from './ServiceContext';
+
+// Export all hooks
 export {
-  ServiceProvider,
   useStateService,
   useServiceState,
   useCanvasService,
@@ -20,12 +14,7 @@ export {
   useRelationshipsService,
   useNotesService,
   useUIService,
-  withService,
-  type ServiceProviderProps,
-} from './ServiceContext';
+} from './hooks';
 
-// Re-export StateService abstract class from types
+// Export the abstract StateService from types
 export { StateService } from '../types';
-
-// Default export for convenience
-export { default as ServiceContext } from './ServiceContext';

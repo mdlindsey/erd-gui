@@ -4,11 +4,11 @@ import 'reactflow/dist/style.css';
 import './App.css';
 
 import { Canvas } from './components/canvas';
-import { ServiceProvider, initializeDefaultService } from './services';
+import { ServiceProvider, createStateService } from './services';
 import { store } from './store';
 
 // Initialize the service layer
-const stateService = initializeDefaultService(store);
+const stateService = createStateService({ type: 'redux', store });
 
 function App() {
   return (

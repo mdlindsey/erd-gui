@@ -5,8 +5,6 @@ import {
   ReactFlow,
   Background,
   BackgroundVariant,
-  Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -17,18 +15,36 @@ import {
   EdgeTypes,
   Panel,
   ReactFlowProvider,
-  Viewport,
   OnMove,
   OnConnect,
   MarkerType,
 } from 'reactflow';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, canvasActions } from '../../store';
+import CanvasControls from './CanvasControls';
 import 'reactflow/dist/style.css';
 
 import { useCanvasService } from '../../services';
 
+// Type definitions for node data
+interface TableNodeData {
+  tableName?: string;
+  columns?: Array<{ name: string; type: string }>;
+}
+
+interface NoteNodeData {
+  content?: string;
+  color?: string;
+}
+
+interface UserNodeData {
+  userName?: string;
+  color?: string;
+}
+
 // Custom node types for ERD entities
 const TableNode = React.memo(
-  ({ data, selected }: { data: any; selected: boolean }) => {
+  ({ data, selected }: { data: TableNodeData; selected: boolean }) => {
     return (
       <div
         className={`table-node ${selected ? 'selected' : ''}`}
@@ -54,7 +70,7 @@ const TableNode = React.memo(
           {data.tableName || 'Table'}
         </div>
         <div style={{ fontSize: '12px', color: '#666' }}>
-          {data.columns?.map((col: any, idx: number) => (
+          {data.columns?.map((col, idx) => (
             <div key={idx} style={{ margin: '2px 0' }}>
               {col.name} <span style={{ color: '#999' }}>({col.type})</span>
             </div>
@@ -66,7 +82,7 @@ const TableNode = React.memo(
 );
 
 const NoteNode = React.memo(
-  ({ data, selected }: { data: any; selected: boolean }) => {
+  ({ data, selected }: { data: NoteNodeData; selected: boolean }) => {
     return (
       <div
         className={`note-node ${selected ? 'selected' : ''}`}
@@ -90,7 +106,7 @@ const NoteNode = React.memo(
 );
 
 const UserNode = React.memo(
-  ({ data, selected }: { data: any; selected: boolean }) => {
+  ({ data, selected }: { data: UserNodeData; selected: boolean }) => {
     return (
       <div
         className={`user-node ${selected ? 'selected' : ''}`}
@@ -98,16 +114,17 @@ const UserNode = React.memo(
           background: data.color || '#e0f2fe',
           border: '2px solid #0277bd',
           borderRadius: '50%',
-          padding: '16px',
           width: '80px',
           height: '80px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 'bold',
           boxShadow: selected
             ? '0 0 0 2px #3b82f6'
             : '0 2px 4px rgba(0,0,0,0.1)',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          color: '#0277bd',
         }}
       >
         {data.userName || 'User'}
@@ -127,91 +144,89 @@ const nodeTypes: NodeTypes = {
 // For now, use default edge rendering
 const edgeTypes: EdgeTypes = {};
 
-// Default viewport configuration
-const defaultViewport: Viewport = {
-  x: 0,
-  y: 0,
-  zoom: 1,
-};
-
 export interface CanvasProps {
   className?: string;
   style?: React.CSSProperties;
 }
 
-const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
+const Canvas: React.FC<CanvasProps> = ({ className, style }) => {
+  const dispatch = useDispatch();
+  const canvasState = useSelector((state: RootState) => state.canvas);
   const canvasService = useCanvasService();
 
   // Sample nodes and edges for initial display
-  const initialNodes: Node[] = useMemo(
-    () => [
-      {
-        id: 'sample-table-1',
-        type: 'table',
-        position: { x: 100, y: 100 },
-        data: {
-          tableName: 'users',
-          columns: [
-            { name: 'id', type: 'integer' },
-            { name: 'email', type: 'varchar' },
-            { name: 'created_at', type: 'timestamp' },
-          ],
-        },
+  const initialNodes: Node[] = [
+    {
+      id: '1',
+      type: 'table',
+      position: { x: 100, y: 100 },
+      data: {
+        tableName: 'users',
+        columns: [
+          { name: 'id', type: 'SERIAL' },
+          { name: 'name', type: 'VARCHAR(255)' },
+          { name: 'email', type: 'VARCHAR(255)' },
+        ],
       },
-      {
-        id: 'sample-table-2',
-        type: 'table',
-        position: { x: 400, y: 100 },
-        data: {
-          tableName: 'posts',
-          columns: [
-            { name: 'id', type: 'integer' },
-            { name: 'user_id', type: 'integer' },
-            { name: 'title', type: 'varchar' },
-          ],
-        },
+    },
+    {
+      id: '2',
+      type: 'table',
+      position: { x: 400, y: 100 },
+      data: {
+        tableName: 'posts',
+        columns: [
+          { name: 'id', type: 'SERIAL' },
+          { name: 'user_id', type: 'INTEGER' },
+          { name: 'title', type: 'VARCHAR(255)' },
+        ],
       },
-      {
-        id: 'sample-note-1',
-        type: 'note',
-        position: { x: 100, y: 300 },
-        data: {
-          content: 'User authentication table',
-          color: '#e8f5e8',
-        },
+    },
+    {
+      id: '3',
+      type: 'note',
+      position: { x: 100, y: 300 },
+      data: {
+        content: 'This is a sample note',
+        color: '#ffd700',
       },
-    ],
-    []
-  );
+    },
+    {
+      id: '4',
+      type: 'user',
+      position: { x: 400, y: 300 },
+      data: {
+        userName: 'Admin',
+        color: '#e0f2fe',
+      },
+    },
+  ];
 
-  const initialEdges: Edge[] = useMemo(
-    () => [
-      {
-        id: 'relationship-1',
-        source: 'sample-table-1',
-        target: 'sample-table-2',
-        animated: false,
-        style: { stroke: '#333', strokeWidth: 2 },
-        markerEnd: { type: MarkerType.Arrow, color: '#333' },
-        data: {
-          relationshipType: 'one-to-many',
-          sourceColumn: 'id',
-          targetColumn: 'user_id',
-        },
+  const initialEdges: Edge[] = [
+    {
+      id: 'e1-2',
+      source: '1',
+      target: '2',
+      type: 'smoothstep',
+      markerEnd: { type: MarkerType.Arrow, color: '#333' },
+      data: {
+        relationshipType: 'one-to-many',
+        sourceColumn: 'id',
+        targetColumn: 'user_id',
       },
-    ],
-    []
-  );
+    },
+  ];
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // Handle viewport changes and sync with canvas service
+  // Handle viewport changes and sync with Redux state
   const onMove: OnMove = useCallback(
     (_event, viewport) => {
+      dispatch(canvasActions.updateViewport(viewport));
       canvasService.updateViewport(viewport);
     },
-    [canvasService]
+    [dispatch, canvasService]
   );
 
   // Handle new connections
@@ -242,11 +257,19 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
     [canvasService.snapToGrid, canvasService.gridSize, setNodes]
   );
 
-  // Fit view helper (placeholder for now)
-  const handleFitView = useCallback(() => {
-    // TODO: Implement fitToView functionality
-    console.log('Fit view requested');
-  }, []);
+  // Use Redux state for viewport
+  const viewport = useMemo(
+    () => ({
+      x: canvasState?.viewport?.x ?? 0,
+      y: canvasState?.viewport?.y ?? 0,
+      zoom: canvasState?.viewport?.zoom ?? 1,
+    }),
+    [
+      canvasState?.viewport?.x,
+      canvasState?.viewport?.y,
+      canvasState?.viewport?.zoom,
+    ]
+  );
 
   return (
     <div
@@ -268,7 +291,7 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        defaultViewport={defaultViewport}
+        defaultViewport={viewport}
         minZoom={canvasService.zoomRange.min}
         maxZoom={canvasService.zoomRange.max}
         snapToGrid={canvasService.snapToGrid}
@@ -291,87 +314,24 @@ const Canvas: React.FC<CanvasProps> = React.memo(({ className, style }) => {
           />
         )}
 
-        <Controls
-          showZoom={true}
-          showFitView={true}
-          showInteractive={true}
-          fitViewOptions={{
-            padding: 0.1,
-            minZoom: canvasService.zoomRange.min,
-            maxZoom: canvasService.zoomRange.max,
-          }}
-        />
-
-        <MiniMap
-          nodeColor="#e0e0e0"
-          nodeStrokeWidth={2}
-          maskColor="rgba(0, 0, 0, 0.1)"
-          style={{
-            background: '#f8f9fa',
-            border: '1px solid #dee2e6',
-          }}
-        />
+        <CanvasControls />
 
         <Panel position="top-left">
           <div
             style={{
-              background: '#fff',
-              padding: '8px 12px',
+              background: 'white',
+              padding: '8px',
               borderRadius: '4px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              border: '1px solid #dee2e6',
-              fontSize: '14px',
-              display: 'flex',
-              gap: '12px',
-              alignItems: 'center',
+              fontSize: '12px',
             }}
           >
-            <span>Zoom: {Math.round(canvasService.viewport.zoom * 100)}%</span>
-            <button
-              onClick={canvasService.toggleGrid}
-              style={{
-                padding: '4px 8px',
-                fontSize: '12px',
-                border: '1px solid #dee2e6',
-                borderRadius: '3px',
-                background: canvasService.gridVisible ? '#e3f2fd' : '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              Grid: {canvasService.gridVisible ? 'ON' : 'OFF'}
-            </button>
-            <button
-              onClick={canvasService.toggleSnapToGrid}
-              style={{
-                padding: '4px 8px',
-                fontSize: '12px',
-                border: '1px solid #dee2e6',
-                borderRadius: '3px',
-                background: canvasService.snapToGrid ? '#e8f5e8' : '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              Snap: {canvasService.snapToGrid ? 'ON' : 'OFF'}
-            </button>
-            <button
-              onClick={handleFitView}
-              style={{
-                padding: '4px 8px',
-                fontSize: '12px',
-                border: '1px solid #dee2e6',
-                borderRadius: '3px',
-                background: '#fff',
-                cursor: 'pointer',
-              }}
-            >
-              Fit View
-            </button>
+            Zoom: {Math.round((canvasState?.viewport?.zoom ?? 1) * 100)}%
           </div>
         </Panel>
       </ReactFlow>
     </div>
   );
-});
+};
 
 Canvas.displayName = 'Canvas';
 

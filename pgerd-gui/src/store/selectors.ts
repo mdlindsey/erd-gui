@@ -1,7 +1,14 @@
 // Redux selectors for efficient state access
 
 import { createSelector } from '@reduxjs/toolkit';
-import type { RootState } from './index';
+import { RootState } from './index';
+import { Table, Column } from '../types/tables';
+
+// Type definitions for search results
+interface ColumnSearchResult {
+  table: Table;
+  column: Column;
+}
 
 // Base selectors
 export const selectCanvas = (state: RootState) => state.canvas;
@@ -210,7 +217,7 @@ export const selectColumnsByName = createSelector(
   (tables, searchTerm) => {
     if (!searchTerm.trim()) return [];
     const term = searchTerm.toLowerCase();
-    const results: Array<{ table: any; column: any }> = [];
+    const results: ColumnSearchResult[] = [];
 
     tables.forEach(table => {
       table.columns.forEach(column => {
